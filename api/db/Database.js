@@ -16,9 +16,18 @@ class Database {
 
 
     async connect(options){
-        let db = await mongoose.connect(options.CONNECTION_STRING);
-        this.mongoConnection = db;
-    
+        try {
+            console.log("DB:", "Connecting...");
+            let db = await mongoose.connect(options.CONNECTION_STRING);
+            this.mongoConnection = db;
+            console.log("DB:", "Connection established!");
+
+
+        } catch(err){
+            console.log("DB:", "Connection Failed!");
+            console.error(err);
+            process.exit(1);
+        }   
     }
 
 
