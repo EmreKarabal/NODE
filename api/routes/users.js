@@ -10,6 +10,9 @@ const Enum = require('../config/Enum');
 const bcrypt = require("bcrypt-nodejs");
 const is = require("is_js");
 const RolePrivileges = require('../db/models/RolePrivileges');
+const config = require("../config");
+const jwt = require("jwt-simple"); 
+
 
 /* GET users listing. */
 router.get('/', async (req, res, next) => {
@@ -172,7 +175,7 @@ router.post("/register", async (req, res) => {
     if(!body.password) throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, "Validatian Error!", "password field must be filled");
 
     if(!is.email(body.email)) throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, "Validation Error!", "Invalid email!");
-    if(body.password.length < 8) throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, "Validation Error!", "Password must be greater than 8 characters");
+    if(body.password.length < Enum.PASSWORD_MIN_LENGTH) throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, "Validation Error!", "Password must be greater than 8 characters");
 
     
 
@@ -190,7 +193,7 @@ router.post("/register", async (req, res) => {
     });
 
     let role = await Roles.create({
-      role_name: "SUPER_ADMIN",
+      role_name: Enum.SUPER_ADMIN,
       is_active: true,
       created_by: createdUser._id     
     });
@@ -211,5 +214,39 @@ router.post("/register", async (req, res) => {
   }
 });
 
+router.post("/auth", async (req, res) => {
+
+  try {
+
+    let {email, password} = req.body;
+    Users.validateFieldsBeforeAuth(email, password);
+
+    let user = await Users.findOne({email});
+    if (!user) throw new CustomError(Enum.HTTP_CODES.UNAUTHORIZED, "Validation error!", "Email or password wrong");
+    if(!user.validatePassword(password)) throw new CustomError(Enum.HTTP_CODES.UNAUTHORIZED, "Validation Error", "Eöail or password wrong");
+
+    let payload = {
+      id: user._id,
+      exp: parseInt(Date.now() / 1000) * config.JWT.EXPIRE_TIME
+    }
+
+    let token = jwt.encode(payload, config.JWT.SECRET);
+
+    let userData = {
+      _id: user._id,
+      first_name: user.first_name,
+      last_name: user.last_name
+    }
+
+    res.json(Response.successResponse({token, user: {userData}}));
+
+  } catch (err) {
+
+    let errorResponse = Response.errorResponse(err);
+    res.status(errorResponse.code).json(errorResponse);
+
+  }
+
+})
 
 module.exports = router;

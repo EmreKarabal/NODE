@@ -2,10 +2,10 @@ const mongoose = require('mongoose');
 
 const schema = mongoose.Schema({
     level: String,
-    email: String,
+    email: {type: String, required: false},
     location: String,
     proc_type: String,
-    log: String
+    log: mongoose.SchemaTypes.Mixed
 } , {
     timestamps: {
         createdAt: "created_at",
