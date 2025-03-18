@@ -9,6 +9,7 @@ router.all("*", auth.authenticate(), (req, res, next) => {
     next();
 });
 
+
 router.post("/", auth.checkRoles("auditlog_view"), async (req, res) => {
     try {
 
@@ -44,7 +45,7 @@ router.post("/", auth.checkRoles("auditlog_view"), async (req, res) => {
         res.json(Response.successResponse(auditLogs));
 
     } catch (err) {
-        let errorResponse = Response.errorResponse(err);
+        let errorResponse = Response.errorResponse(err, req.user?.language);
         res.status(errorResponse.code).json(errorResponse);
     }
 });
