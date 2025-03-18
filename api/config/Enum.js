@@ -3,7 +3,7 @@ module.exports = {
         OK: 200,
         CREATED: 201,
         NO_CONTENT: 204,
-        NOT_MODIFIED: 304, 
+        NOT_MODIFIED: 304,
         BAD_REQUEST: 400,
         UNAUTHORIZED: 401,
         FORBIDDEN: 403,
@@ -17,13 +17,11 @@ module.exports = {
         UNPROCESSIBLE_ENTITY: 422,
         TOO_MANY_REQUESTS: 429,
         INT_SERVER_ERROR: 500,
-        BAD_GATEAWAY: 502
+        BAD_GATEWAY: 502
     },
 
-    PASSWORD_MIN_LENGTH: 8,
+    PASS_LENGTH: 8,
     SUPER_ADMIN: "SUPER_ADMIN",
-
-
 
     LOG_LEVELS: {
         "INFO": "INFO",
@@ -33,5 +31,4 @@ module.exports = {
         "VERBOSE": "VERBOSE",
         "HTTP": "HTTP"
     }
-
 }

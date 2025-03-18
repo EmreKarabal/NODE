@@ -1,50 +1,44 @@
-const CustomError = require("../lib/Error");
 const Enum = require("../config/Enum");
+const CustomError = require("./Error");
 
 class Response {
+    constructor() { }
 
-    constructor(){}
-    
-    static successResponse(data, code = 200){
+    static successResponse(data, code = 200) {
         return {
-            code, 
+            code,
             data
         }
     }
 
-    static errorResponse(error){
-        if (error instanceof CustomError){
-            return{
+    static errorResponse(error) {
+        if (error instanceof CustomError) {
+            return {
                 code: error.code,
-                error:{
+                error: {
                     message: error.message,
                     description: error.description
                 }
             }
-        }
-        else if(error.message.includes("E11000")){
+        } else if (error.message.includes("E11000")) {
             return {
                 code: Enum.HTTP_CODES.CONFLICT,
                 error: {
-                    message: "Already exists!",
-                    description: "Key already exists!"
+                    message: "Already Exists!",
+                    description: "Already Exists!"
                 }
             }
         }
-        else {
 
-            return{
-                code: Enum.HTTP_CODES.INT_SERVER_ERROR,
-                error:{
-                    message: "Unknown error",
-                    description: error.message
-                }
+        return {
+            code: Enum.HTTP_CODES.INT_SERVER_ERROR,
+            error: {
+                message: "Unknown Error!",
+                description: error.message
             }
-
-
         }
-        
     }
+
 }
 
 module.exports = Response;

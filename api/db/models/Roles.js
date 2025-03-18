@@ -1,14 +1,13 @@
-const mongoose = require('mongoose');
-const RolePrivileges = require('./RolePrivileges');
+const mongoose = require("mongoose");
+const RolePrivileges = require("./RolePrivileges");
 
 const schema = mongoose.Schema({
     role_name: {type: String, required: true, unique: true},
-    is_active: {type: Boolean, required: true},
+    is_active: {type: Boolean, default: true},
     created_by: {
-        type: mongoose.SchemaTypes.ObjectId,
-        required: false
+        type: mongoose.SchemaTypes.ObjectId
     }
-} , {
+},{
     versionKey: false,
     timestamps: {
         createdAt: "created_at",
@@ -16,21 +15,18 @@ const schema = mongoose.Schema({
     }
 });
 
-
 class Roles extends mongoose.Model {
 
-    static async deleteOne(query){
+    static async remove(query) {
 
-        if(query._id){
-            await RolePrivileges.deleteMany({role_id: query._id});
-
+        if (query._id) {
+            await RolePrivileges.remove({role_id: query._id});
         }
-        
-        await super.deleteOne(query);
-    }
 
+        await super.remove(query);
+    }
 
 }
 
 schema.loadClass(Roles);
-module.exports =  mongoose.model("roles", schema);
+module.exports = mongoose.model("roles", schema);
