@@ -92,6 +92,18 @@ module.exports = {
             description: "Category delete"
         },
         {
+            key: "category_export",
+            name: "Category Export",
+            group: "CATEGORIES",
+            description: "Category export"
+        },
+        {
+            key: "category_import",
+            name: "Category Import",
+            group: "CATEGORIES",
+            description: "Category import"
+        },
+        {
             key: "auditlogs_view",
             name: "AuditLogs View",
             group: "AUDITLOGS",
