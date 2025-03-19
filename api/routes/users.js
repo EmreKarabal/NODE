@@ -2,7 +2,6 @@ var express = require('express');
 const bcrypt = require("bcrypt-nodejs");
 const is = require("is_js");
 const jwt = require("jwt-simple");
-
 const Users = require('../db/models/Users');
 const Response = require("../lib/Response");
 const CustomError = require('../lib/Error');
@@ -12,6 +11,10 @@ const Roles = require('../db/models/Roles');
 const config = require('../config');
 var router = express.Router();
 const auth = require("../lib/auth")();
+const i18n = new (require("../lib/i18n"))(config.DEFAULT_LANG);
+
+
+
 
 router.post("/register", async (req, res) => {
   let body = req.body;
@@ -74,9 +77,9 @@ router.post("/auth", async (req, res) => {
 
     let user = await Users.findOne({ email });
 
-    if (!user) throw new CustomError(Enum.HTTP_CODES.UNAUTHORIZED, i18n.translate("COMMON.VALIDATION_ERROR_TITLE", req.user.language), i18n.translate("USER.AUTH_ERROR", req.user.language));
+    if (!user) throw new CustomError(Enum.HTTP_CODES.UNAUTHORIZED, i18n.translate("COMMON.VALIDATION_ERROR_TITLE", config.DEFAULT_LANG), i18n.translate("USER.AUTH_ERROR", config.DEFAULT_LANG));
 
-    if (!user.validPassword(password)) throw new CustomError(Enum.HTTP_CODES.UNAUTHORIZED, i18n.translate("COMMON.VALIDATION_ERROR_TITLE", req.user.language), i18n.translate("USER.AUTH_ERROR", req.user.language));
+    if (!user.validPassword(password)) throw new CustomError(Enum.HTTP_CODES.UNAUTHORIZED, i18n.translate("COMMON.VALIDATION_ERROR_TITLE", config.DEFAULT_LANG), i18n.translate("USER.AUTH_ERROR", config.DEFAULT_LANG));
 
     let payload = {
       id: user._id,
