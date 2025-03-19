@@ -98,12 +98,6 @@ module.exports = {
             description: "Category export"
         },
         {
-            key: "category_import",
-            name: "Category Import",
-            group: "CATEGORIES",
-            description: "Category import"
-        },
-        {
             key: "auditlogs_view",
             name: "AuditLogs View",
             group: "AUDITLOGS",
