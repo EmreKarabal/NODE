@@ -5,6 +5,7 @@ module.exports =  {
         "UNKNOWN_ERROR": "Bilinmeyen hata!",
         "FIELD_MUST_BE_FILLED": "{} kısmını doldurmak zorunludur!",
         "FIELD_MUST_BE_ARRAY": "{} kısmı bir dizi şeklinde olmalıdır!",
+        "NEED_PERMISSIONS": "Gerekli izin yok!",
     },
     "USER": {
         "AUTH_ERROR": "Email ya da şifre yanlış!",
