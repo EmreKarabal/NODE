@@ -1,0 +1,47 @@
+<div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow">
+        <div class="card-body">
+          <h2 class="card-title text-center mb-4">Kayıt Ol</h2>
+          <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+            <!-- Ad Alanı -->
+            <div class="mb-3">
+              <label for="name" class="form-label">Adınız</label>
+              <input type="text" class="form-control" id="name" formControlName="name" placeholder="Adınızı girin" required>
+              <div *ngIf="registerForm.get('name')?.invalid && registerForm.get('name')?.touched" class="text-danger">
+                Ad alanı zorunludur.
+              </div>
+            </div>
+  
+            <!-- E-posta Alanı -->
+            <div class="mb-3">
+              <label for="email" class="form-label">E-posta</label>
+              <input type="email" class="form-control" id="email" formControlName="email" placeholder="E-posta adresinizi girin" required>
+              <div *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched" class="text-danger">
+                Geçerli bir e-posta adresi girin.
+              </div>
+            </div>
+  
+            <!-- Şifre Alanı -->
+            <div class="mb-3">
+              <label for="password" class="form-label">Şifre</label>
+              <input type="password" class="form-control" id="password" formControlName="password" placeholder="Şifrenizi girin" required>
+              <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" class="text-danger">
+                Şifre en az 6 karakter olmalıdır.
+              </div>
+            </div>
+  
+            <!-- Kayıt Ol Butonu -->
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary btn-block" [disabled]="registerForm.invalid">Kayıt Ol</button>
+            </div>
+          </form>
+  
+          <!-- Giriş Yap Linki -->
+          <div class="text-center mt-3">
+            <p>Zaten bir hesabınız var mı? <a routerLink="/login">Giriş Yap</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

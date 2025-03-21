@@ -22,6 +22,7 @@ module.exports = {
 
     PASS_LENGTH: 8,
     SUPER_ADMIN: "SUPER_ADMIN",
+    BASIC_USER: "BASIC_USER",
 
     LOG_LEVELS: {
         "INFO": "INFO",

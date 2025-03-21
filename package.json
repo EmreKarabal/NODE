@@ -1,6 +1,9 @@
 {
   "dependencies": {
+    "@angular/cli": "^19.2.4",
+    "bootstrap": "^5.3.3",
     "dotenv": "^16.4.7",
+    "express-rate-limit": "^7.5.0",
     "node-xlsx": "^0.24.0"
   }
 }
