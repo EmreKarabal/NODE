@@ -5,7 +5,9 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 export interface AuthResponse {
-  token: string;
+  data: {
+    token: string;
+  };
 }
 
 @Injectable({
@@ -53,8 +55,11 @@ export class AuthService {
   login(credentials: { email: string, password: string }): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/users/auth`, credentials).pipe(
       tap(response => {
-        if (response && response.token) {
+        if (response && response.data && response.data.token) {
           this.setUserData(response);
+          }
+        else {
+          console.error("Giriş başarılı ama token yok!");
         }
       })
     );
@@ -62,7 +67,7 @@ export class AuthService {
 
   private setUserData(response: AuthResponse) {
     if (isPlatformBrowser(this.platformId)) {
-      localStorage.setItem('access_token', response.token);
+      localStorage.setItem('access_token', response.data.token);
       localStorage.setItem('current_user', JSON.stringify(response));
     }
     this.currentUserSubject.next(response);
@@ -81,4 +86,15 @@ export class AuthService {
   getCurrentUser(): AuthResponse | null {
     return this.currentUserSubject.value;
   }
+
+  getToken(): string | null {
+
+    if(isPlatformBrowser(this.platformId)){
+      const token = localStorage.getItem('access_token');
+      console.log("JWT TOKEN: ", token);
+      return token;
+    }
+    return null;
+  }
+
 }
