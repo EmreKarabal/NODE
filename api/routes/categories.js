@@ -34,7 +34,7 @@ router.all("*", auth.authenticate(), (req, res, next) => {
 });
 
 /* GET categories listing. */
-router.get('/', auth.checkRoles("category_view"), async (req, res, next) => {
+router.get('/', /*auth.checkRoles("category_view"),*/ async (req, res, next) => {
 
     try {
         let categories = await Categories.find({});
@@ -47,7 +47,7 @@ router.get('/', auth.checkRoles("category_view"), async (req, res, next) => {
     }
 });
 
-router.post("/add", auth.checkRoles("category_add"), async (req, res) => {
+router.post("/add", /*auth.checkRoles("category_add"),*/ async (req, res) => {
     let body = req.body;
     try {
 
@@ -74,7 +74,7 @@ router.post("/add", auth.checkRoles("category_add"), async (req, res) => {
     }
 });
 
-router.post("/update", auth.checkRoles("category_update"), async (req, res) => {
+router.post("/update", /*auth.checkRoles("category_update"),*/ async (req, res) => {
     let body = req.body;
     try {
 
@@ -97,7 +97,7 @@ router.post("/update", auth.checkRoles("category_update"), async (req, res) => {
     }
 })
 
-router.post("/delete", auth.checkRoles("category_delete"), async (req, res) => {
+router.post("/delete", /*auth.checkRoles("category_delete"),*/ async (req, res) => {
     let body = req.body;
 
     try {
@@ -116,7 +116,7 @@ router.post("/delete", auth.checkRoles("category_delete"), async (req, res) => {
 
 })
 
-router.post("/export", auth.checkRoles("category_export"), async (req, res) => {
+router.post("/export", /*auth.checkRoles("category_export"),*/ async (req, res) => {
     try {
         let categories = await Categories.find({});
 
@@ -141,7 +141,7 @@ router.post("/export", auth.checkRoles("category_export"), async (req, res) => {
     }
 });
 
-router.post("/import", auth.checkRoles("category_add"), upload, async (req, res) => {
+router.post("/import", /*auth.checkRoles("category_add"),*/ upload, async (req, res) => {
     try {
 
         let file = req.file;

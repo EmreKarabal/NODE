@@ -63,7 +63,7 @@ router.post("/register", async (req, res) => {
       role_name: Enum.SUPER_ADMIN,
       is_active: true,
       created_by: createdUser._id
-    })
+    });
 
     await UserRoles.create({
       role_id: role._id,
@@ -114,12 +114,63 @@ router.post("/auth", limiter, async (req, res) => {
   }
 })
 
+
+router.post("/add", /*auth.checkRoles("user_add"),*/ async (req, res) => {
+  let body = req.body;
+
+
+    if (!body.email) throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, i18n.translate("COMMON.VALIDATION_ERROR_TITLE", req.user.language), i18n.translate("COMMON.FIELD_MUST_BE_FILLED", req.user.language, ["email"]));
+
+    if (is.not.email(body.email)) throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, i18n.translate("COMMON_VALIDATION_ERROR_TITLE", req.user.language), i18n.translate("USER.EMAIL_FORMAT_ERROR", req.user.language));
+
+    if (!body.password) throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, i18n.translate("COMMON.VALIDATION_ERROR_TITLE", req.user.language), i18n.translate("COMMON.FIELD_MUST_BE_FILLED", req.user.language, ["password"]));
+
+    if (body.password.length < Enum.PASS_LENGTH) {
+      throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, i18n.translate("COMMON.VALIDATION_ERROR_TITLE", req.user.language), i18n.translate("COMMON.PASSWORD_LENGTH_ERROR"));
+    }
+
+    /*
+    if (!body.roles || !Array.isArray(body.roles) || body.roles.length == 0) {
+      throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, i18n.translate("COMMON.VALIDATION_ERROR_TITLE", req.user.language), i18n.translate("COMMON.FIELD_MUST_BE_ARRAY", req.user.language, ["roles"]));
+    }
+
+    let roles = await Roles.find({ _id: { $in: body.roles } });
+
+    if (roles.length == 0) {
+       throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, i18n.translate("COMMON.VALIDATION_ERROR_TITLE", req.user.language), i18n.translate("COMMON.FIELD_MUST_BE_ARRAY", req.user.language, ["roles"]));
+    }
+    */
+
+    let password = bcrypt.hashSync(body.password, bcrypt.genSaltSync(8), null);
+
+    let user = await Users.create({
+      email: body.email,
+      password,
+      is_active: true,
+      first_name: body.first_name,
+      last_name: body.last_name,
+      phone_number: body.phone_number
+    });
+
+    /*
+    for (let i = 0; i < roles.length; i++) {
+      await UserRoles.create({
+        role_id: roles[i]._id,
+        user_id: user._id
+      })
+    }
+    */
+    res.status(Enum.HTTP_CODES.CREATED).json(Response.successResponse({ success: true }, Enum.HTTP_CODES.CREATED));
+
+
+});
+
 router.all("*", auth.authenticate(), (req, res, next) => {
   next();
 });
 
 /* GET users listing. */
-router.get('/', auth.checkRoles("user_view"), async (req, res) => {
+router.get('/', /*auth.checkRoles("user_view"),*/ async (req, res) => {
   try {
     let users = await Users.find({}, {password: 0}).lean();
 
@@ -136,57 +187,8 @@ router.get('/', auth.checkRoles("user_view"), async (req, res) => {
   }
 });
 
-router.post("/add", auth.checkRoles("user_add"), async (req, res) => {
-  let body = req.body;
-  try {
 
-    if (!body.email) throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, i18n.translate("COMMON.VALIDATION_ERROR_TITLE", req.user.language), i18n.translate("COMMON.FIELD_MUST_BE_FILLED", req.user.language, ["email"]));
-
-    if (is.not.email(body.email)) throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, i18n.translate("COMMON_VALIDATION_ERROR_TITLE", req.user.language), i18n.translate("USER.EMAIL_FORMAT_ERROR", req.user.language));
-
-    if (!body.password) throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, i18n.translate("COMMON.VALIDATION_ERROR_TITLE", req.user.language), i18n.translate("COMMON.FIELD_MUST_BE_FILLED", req.user.language, ["password"]));
-
-    if (body.password.length < Enum.PASS_LENGTH) {
-      throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, i18n.translate("COMMON.VALIDATION_ERROR_TITLE", req.user.language), i18n.translate("COMMON.PASSWORD_LENGTH_ERROR"));
-    }
-
-    if (!body.roles || !Array.isArray(body.roles) || body.roles.length == 0) {
-      throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, i18n.translate("COMMON.VALIDATION_ERROR_TITLE", req.user.language), i18n.translate("COMMON.FIELD_MUST_BE_ARRAY", req.user.language, ["roles"]));
-    }
-
-    let roles = await Roles.find({ _id: { $in: body.roles } });
-
-    if (roles.length == 0) {
-      throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, i18n.translate("COMMON.VALIDATION_ERROR_TITLE", req.user.language), i18n.translate("COMMON.FIELD_MUST_BE_ARRAY", req.user.language, ["roles"]));
-    }
-
-    let password = bcrypt.hashSync(body.password, bcrypt.genSaltSync(8), null);
-
-    let user = await Users.create({
-      email: body.email,
-      password,
-      is_active: true,
-      first_name: body.first_name,
-      last_name: body.last_name,
-      phone_number: body.phone_number
-    });
-
-    for (let i = 0; i < roles.length; i++) {
-      await UserRoles.create({
-        role_id: roles[i]._id,
-        user_id: user._id
-      })
-    }
-
-    res.status(Enum.HTTP_CODES.CREATED).json(Response.successResponse({ success: true }, Enum.HTTP_CODES.CREATED));
-
-  } catch (err) {
-    let errorResponse = Response.errorResponse(err);
-    res.status(errorResponse.code).json(errorResponse);
-  }
-})
-
-router.post("/update", auth.checkRoles("user_update"), async (req, res) => {
+router.post("/update", /*auth.checkRoles("user_update"),*/ async (req, res) => {
   try {
     let body = req.body;
     let updates = {};
@@ -241,7 +243,7 @@ router.post("/update", auth.checkRoles("user_update"), async (req, res) => {
   }
 });
 
-router.post("/delete", auth.checkRoles("user_delete"), async (req, res) => {
+router.post("/delete", /*auth.checkRoles("user_delete"),*/ async (req, res) => {
   try {
     let body = req.body;
 

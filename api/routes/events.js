@@ -8,8 +8,6 @@ emitter.addEmitter("notifications");
 
 router.get("/", async (req, res) => {
 
-    
-
     res.writeHead(HTTP_CODES.OK, {
         "Content-Type": "text/event-stream",
         "Connection": "keep-alive",
