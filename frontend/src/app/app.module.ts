@@ -3,27 +3,38 @@ import { BrowserModule, provideClientHydration, withEventReplay } from '@angular
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HomeComponent } from './pages/home/home.component';
-import { LoginComponent } from './pages/login/login.component';
-import { RegisterComponent } from './pages/register/register.component';
-import { ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule, provideHttpClient, withFetch } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule, provideHttpClient, withFetch} from '@angular/common/http';
+import { AuthInterceptor } from './core/interceptors/auth.interceptor';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import { LoginComponent } from './auth/login/login/login.component';
+import { RegisterComponent } from './auth/register/register/register.component';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { DashboardComponent } from './dashboard/dashboard/dashboard.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent,
     LoginComponent,
-    RegisterComponent
+    RegisterComponent,
+    DashboardComponent
   ],
   imports: [
     BrowserModule,
+    CommonModule,
+    FormsModule,
+    RouterModule,
     AppRoutingModule,
     ReactiveFormsModule,
     HttpClientModule
   ],
   providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    },
     provideClientHydration(withEventReplay()),
     provideHttpClient(withFetch())
   ],

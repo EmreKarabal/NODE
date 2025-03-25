@@ -1,16 +1,19 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { HomeComponent } from './pages/home/home.component';
-import { LoginComponent } from './pages/login/login.component';
-import { RegisterComponent } from './pages/register/register.component';
+import { LoginComponent } from './auth/login/login/login.component';
+import { RegisterComponent } from './auth/register/register/register.component';
+import { DashboardComponent } from './dashboard/dashboard/dashboard.component';
+import { AuthGuard } from './core/guards/auth.guard';
 
-
-
-const routes: Routes = [
-  { path: '', component: RegisterComponent },
+export const routes: Routes = [
   { path: 'login', component: LoginComponent },
-  { path: 'home', component: HomeComponent },
-  { path: '**', redirectTo: '' } // 404 sayfası için yönlendirme
+  { path: 'register', component: RegisterComponent },
+  { 
+    path: 'dashboard', 
+    component: DashboardComponent
+  },
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: '**', redirectTo: '/login' }
 ];
 
 @NgModule({
