@@ -70,7 +70,7 @@ module.exports = function () {
                 if(i >= expectedRoles.length) {
                     
                     // Rol bulunmadı
-                    let response = Response.errorResponse(new CustomError(Enum.HTTP_CODES.UNAUTHORIZED, "Need permission", "Missing permission!"));
+                    let response = Response.errorResponse(new CustomError(Enum.HTTP_CODES.NEED_PERMISSION, "Need permission", "Missing permission!"));
                     return res.status(response.code).json(response);
                 }
             

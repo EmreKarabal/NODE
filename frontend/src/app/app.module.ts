@@ -11,6 +11,7 @@ import { RegisterComponent } from './auth/register/register/register.component';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { DashboardComponent } from './dashboard/dashboard/dashboard.component';
+import { AuthGuardInterceptor } from './core/interceptors/auth-guard.interceptor';
 
 
 @NgModule({
@@ -33,6 +34,11 @@ import { DashboardComponent } from './dashboard/dashboard/dashboard.component';
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthGuardInterceptor,
       multi: true
     },
     provideClientHydration(withEventReplay()),

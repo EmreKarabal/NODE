@@ -36,7 +36,7 @@ router.get("/", /*auth.checkRoles("role_view"),*/ async (req, res) => {
     }
 });
 
-router.post("/add", /*auth.checkRoles("role_add"),*/ async (req, res) => {
+router.post("/add", auth.checkRoles("role_add"), async (req, res) => {
     let body = req.body;
     try {
 
@@ -72,7 +72,7 @@ router.post("/add", /*auth.checkRoles("role_add"),*/ async (req, res) => {
     }
 });
 
-router.post("/update", /*auth.checkRoles("role_update"),*/ async (req, res) => {
+router.post("/update", auth.checkRoles("role_update"), async (req, res) => {
     let body = req.body;
     try {
 
@@ -93,8 +93,6 @@ router.post("/update", /*auth.checkRoles("role_update"),*/ async (req, res) => {
 
             let permissions = await RolePrivileges.find({ role_id: body._id });
 
-            // body.permissions => ["category_view", "user_add"]
-            // permissions => [{role_id: "abc", permission: "user_add", _id: "bcd"}];
 
             let removedPermissions = permissions.filter(x => !body.permissions.includes(x.permission));
             let newPermissions = body.permissions.filter(x => !permissions.map(p => p.permission).includes(x));
@@ -128,7 +126,7 @@ router.post("/update", /*auth.checkRoles("role_update"),*/ async (req, res) => {
     }
 });
 
-router.post("/delete", /*auth.checkRoles("role_delete"),*/ async (req, res) => {
+router.post("/delete", auth.checkRoles("role_delete"), async (req, res) => {
     let body = req.body;
     try {
 

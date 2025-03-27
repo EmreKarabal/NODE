@@ -3,19 +3,37 @@ import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { jwtDecode} from 'jwt-decode';
 
 export interface AuthResponse {
   data: {
     token: string;
+    user?: {
+      role?: {
+        permissions: string[];
+      }
+    }
   };
 }
+
+interface JwtPayload {
+  userId: number;
+  username: string;
+  role: {
+    id: number;
+    name: string;
+    permissions: string[];
+  };
+  exp: number;
+}
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
  
-  private apiUrl = 'http://localhost:3000/api'; // Replace with your actual backend URL
+  private apiUrl = 'http://localhost:3000/api'; 
   private currentUserSubject = new BehaviorSubject<AuthResponse | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
@@ -65,12 +83,31 @@ export class AuthService {
     );
   }
 
+  private decodeToken(token: string): JwtPayload {
+    return jwtDecode(token);
+  }
+
   private setUserData(response: AuthResponse) {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.setItem('access_token', response.data.token);
       localStorage.setItem('current_user', JSON.stringify(response));
     }
+
+    try {
+
+      const decodedToken = this.decodeToken(response.data.token);
+      response.data.user = {
+        role: decodedToken.role
+      };
+
+      localStorage.setItem('current_user', JSON.stringify(response));
+
+    } catch(error){
+      console.error('Error while decoding token! ', error);
+    }
+
     this.currentUserSubject.next(response);
+
   }
 
   logout() {
@@ -96,5 +133,36 @@ export class AuthService {
     }
     return null;
   }
+
+  private isTokenValid(): boolean {
+    const token = this.getToken();
+    if(!token) return false;
+
+    try {
+      const decoded = this.decodeToken(token);
+      return decoded.exp * 1000 > Date.now();
+    } catch {
+      return false;
+    }
+
+  }
+
+  hasPermission(requiredPermission: string): boolean {
+
+
+    if(!this.isAuthenticated()){
+      return false;
+    }
+
+    const current_user = this.getCurrentUser();
+    // BU IF NEDENSE ÇALIŞTIĞI İÇİN FALSE DÖNÜYOR BURAYI ÇÖZ
+    if(!current_user?.data?.user?.role){
+      return false;
+    }
+
+
+    return current_user.data.user.role.permissions.includes(requiredPermission);
+  }
+
 
 }
