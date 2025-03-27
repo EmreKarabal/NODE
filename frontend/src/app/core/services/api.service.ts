@@ -1,6 +1,6 @@
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { last, Observable } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({
@@ -34,17 +34,11 @@ export class ApiService {
   }
 
   addUser(user: any): Observable<any> {
-
-    const token = this.getToken();
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    });
-
-    return this.http.post<any[]>(`${this.baseUrl}/users/add`, {headers}, user);
+    return this.http.post<any[]>(`${this.baseUrl}/users/add`, user);
   }
 
   updateUser(user: any): Observable<any> {
+    console.log("updateding this user: ", user);
     return this.http.post(`${this.baseUrl}/users/update`, user);
   }
 

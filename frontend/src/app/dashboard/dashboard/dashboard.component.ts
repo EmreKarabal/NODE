@@ -48,6 +48,7 @@ interface Category {
 
 
 export class DashboardComponent implements OnInit {
+
   // Mevcut özellikler
   activeTab: 'users' | 'roles' | 'categories' = 'users';
   users: User[] = [];
@@ -56,6 +57,11 @@ export class DashboardComponent implements OnInit {
   isModalOpen = false;
   modalMode: 'add' | 'edit' = 'add';
   currentEntity: any = {};
+  selectedPermissions: string[] = [];
+
+  allRoles: Role[] = [];
+  allPermissions: Permission[] = [];
+  
 
   constructor(
     private apiService: ApiService,
@@ -65,6 +71,7 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void {
     // Sadece veri yükleme
     this.loadData();
+    this.getAllRoles();
   }
 
   switchTab(tab: 'users' | 'roles' | 'categories') {
@@ -73,7 +80,6 @@ export class DashboardComponent implements OnInit {
   }
 
   openModal(mode: 'add' | 'edit', entity?: any, event?: Event) {
-    console.log('modal çalıştı');
 
     if(event){
       event.stopPropagation();
@@ -81,19 +87,51 @@ export class DashboardComponent implements OnInit {
 
     this.modalMode = mode;
     this.isModalOpen = true;
+    this.selectedPermissions = [];
     this.currentEntity = mode === 'edit' ? { ...entity } : {};
+
+
+
+    if (mode === 'add') {
+      this.currentEntity = {
+        first_name: '',
+        last_name: '',
+        email: '',
+        password: '',
+        is_active: true,
+        roles: [],
+        permissions: [],
+        name: '',
+        role_name: ''
+      };
+    } else {
+      // Düzenleme modunda mevcut seçimleri koru
+      this.currentEntity = { 
+        ...entity,
+        roles: entity.roles ? [...entity.roles] : [],
+        permissions: entity.permissions ? [...entity.permissions] : []
+      };
+
+      if(this.activeTab === 'roles' && entity.permissions){
+        this.selectedPermissions = entity.permissions.map((perm: Permission) => perm.permission);
+      }
+      
+      // Eğer roles object array olarak geliyorsa
+      if (entity.roles && entity.roles.length > 0 && typeof entity.roles[0] === 'object') {
+        this.currentEntity.roles = entity.roles.map((r: any) => r._id);
+      }
+    }
+
   }
 
   closeModal(event?: Event){
 
     if(event) {
       if(event.target === event.currentTarget){
-        console.log('modal kapandı 1');
         this.isModalOpen = false;
         this.currentEntity = {};
       }
     } else {
-      console.log('modal kapandı 2');
       this.isModalOpen = false;
       this.currentEntity = {};
     }
@@ -108,15 +146,21 @@ export class DashboardComponent implements OnInit {
         if(this.modalMode === 'add'){
           this.apiService.addUser(this.currentEntity).subscribe(
             response => {
+              console.log('user created!');
               this.loadData();
+              this.currentEntity = {};
               this.closeModal();
             },
-            error => console.error('Error while adding user! ', error)
+            error => {
+              console.error('Error while adding user! ', error);
+              alert('error creating user! ' + error);
+            }
           );
         } else {
           this.apiService.updateUser(this.currentEntity).subscribe(
             response => {
               this.loadData();
+              this.currentEntity = {};
               this.closeModal();
             },
             error => console.error('Error while editing user! ', error)
@@ -126,17 +170,38 @@ export class DashboardComponent implements OnInit {
       
       case 'roles':
         if(this.modalMode === 'add'){
-          this.apiService.addRole(this.currentEntity).subscribe(
+
+          const roleData = {
+            role_name: this.currentEntity.role_name,
+            is_active: this.currentEntity.is_active,
+            permissions: this.selectedPermissions
+          }
+
+          console.log('selected permissions: ', this.selectedPermissions);
+          console.log('roledata bu: ', roleData);
+
+          this.apiService.addRole(roleData).subscribe(
             response => {
               this.loadData();
+              this.currentEntity = {};
               this.closeModal();
             },
             error => console.error('Error while adding role! ', error)
           );
         } else {
-          this.apiService.updateRole(this.currentEntity).subscribe(
+
+          const roleData = {
+            _id: this.currentEntity._id,
+            role_name: this.currentEntity.role_name,
+            is_active: this.currentEntity.is_active,
+            permissions: this.selectedPermissions
+          }
+
+
+          this.apiService.updateRole(roleData).subscribe(
             response => {
               this.loadData();
+              this.currentEntity = {};
               this.closeModal();
             },
             error => console.error('Error while updating role! ', error)
@@ -149,6 +214,7 @@ export class DashboardComponent implements OnInit {
           this.apiService.addCategory(this.currentEntity).subscribe(
             response => {
               this.loadData();
+              this.currentEntity = {};
               this.closeModal();
             },
             error => console.error('Error while adding category! ', error)
@@ -158,6 +224,7 @@ export class DashboardComponent implements OnInit {
           this.apiService.updateCategory(this.currentEntity).subscribe(
             response => {
               this.loadData();
+              this.currentEntity = {};
               this.closeModal();
             },
             error => console.error('Error while updating category! ', error)
@@ -231,8 +298,84 @@ export class DashboardComponent implements OnInit {
   }
 
   getPermissions(role: Role): string {
-    return role.permissions && role.permissions.length > 0 
-      ? role.permissions.map(perm => perm.permission).join(', ') 
-      : 'No permissions';
+    
+    if (role.permissions && role.permissions.length > 0) {
+      return role.permissions.map(perm => perm.permission). join(', ');
+    }
+
+    return 'No permissions';
+
   }
+
+  getAllRoles(){
+    this.apiService.getRoles().subscribe({
+      next: (response: any) => {
+        if (response.code === 200){
+          this.allRoles = response.data;
+
+          this.allPermissions = this.extractUniquePermissions(response.data).filter(
+            perm => perm.permission && typeof perm.permission === 'string' && perm.permission.includes('_')
+          );
+        }
+      },
+      error: (error) => {
+        console.error('Error while fetching all roles!', error);
+      }
+    })
+  }
+
+  extractUniquePermissions(roles: Role[]): Permission[] {
+
+    const map = new Map<string, Permission>();
+
+    roles.forEach(role => {
+      role.permissions?.forEach(perm => {
+        if(!map.has(perm.permission)) {
+          map.set(perm.permission, {
+            _id: perm._id,
+            permission: perm.permission,
+            role_id: perm.role_id
+          });
+        }
+      });
+    });
+
+    return Array.from(map.values());
+  }
+
+  isRoleSelected(roleId: string): boolean {
+    return this.currentEntity.roles?.includes(roleId) || false;
+  }
+
+  toggleRoleSelection(roleId: string): void {
+    if(!this.currentEntity.roles) {
+      this.currentEntity.roles = [];
+    }
+
+    const index = this.currentEntity.roles.indexOf(roleId);
+    if(index === -1) {
+      this.currentEntity.roles.push(roleId);
+    }
+    else {
+      this.currentEntity.roles.splice(index, 1);
+    }
+
+  }
+
+  isPermissionSelected(permissionName: string): boolean {
+    return this.selectedPermissions.includes(permissionName) || false;
+  }
+
+  togglePermission(permissionName: string): void {
+
+    const index = this.selectedPermissions.indexOf(permissionName);
+
+    if(index === -1) {
+      this.selectedPermissions.push(permissionName);
+    }
+    else {
+      this.selectedPermissions.splice(index, 1);
+    }
+  }
+
 }

@@ -51,7 +51,7 @@ router.post("/add", auth.checkRoles("category_add"), async (req, res) => {
     let body = req.body;
     try {
 
-        if (!body.name) throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, i18n.translate("COMMON.VALIDATION_ERROR_TITLE", req.user.language), i18n.translate("COMMON.FIELD_MUST_BE_FILLED", req.user.language, ["name"]));
+        if (!body.name) throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, i18n.translate("COMMON.VALIDATION_ERROR_TITLE", config.DEFAULT_LANG), i18n.translate("COMMON.FIELD_MUST_BE_FILLED", config.DEFAULT_LANG, ["name"]));
 
         let category = new Categories({
             name: body.name,
@@ -78,7 +78,7 @@ router.post("/update", auth.checkRoles("category_update"), async (req, res) => {
     let body = req.body;
     try {
 
-        if (!body._id) throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, i18n.translate("COMMON.VALIDATION_ERROR_TITLE", req.user.language), i18n.translate("COMMON.FIELD_MUST_BE_FILLED", req.user.language, ["_id"]));
+        if (!body._id) throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, i18n.translate("COMMON.VALIDATION_ERROR_TITLE", config.DEFAULT_LANG), i18n.translate("COMMON.FIELD_MUST_BE_FILLED", config.DEFAULT_LANG, ["_id"]));
 
         let updates = {};
 
@@ -101,9 +101,9 @@ router.post("/delete", auth.checkRoles("category_delete"), async (req, res) => {
     let body = req.body;
 
     try {
-        if (!body._id) throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, i18n.translate("COMMON.VALIDATION_ERROR_TITLE", req.user.language), i18n.translate("COMMON.FIELD_MUST_BE_FILLED", req.user.language, ["_id"]));
+        if (!body._id) throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, i18n.translate("COMMON.VALIDATION_ERROR_TITLE", config.DEFAULT_LANG), i18n.translate("COMMON.FIELD_MUST_BE_FILLED", config.DEFAULT_LANG, ["_id"]));
 
-        await Categories.remove({ _id: body._id });
+        await Categories.deleteOne({ _id: body._id });
 
         AuditLogs.info(req.user?.email, "Categories", "Delete", { _id: body._id });
 

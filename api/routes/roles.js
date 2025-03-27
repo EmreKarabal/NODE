@@ -38,11 +38,12 @@ router.get("/", /*auth.checkRoles("role_view"),*/ async (req, res) => {
 
 router.post("/add", auth.checkRoles("role_add"), async (req, res) => {
     let body = req.body;
+
     try {
 
-        if (!body.role_name) throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, i18n.translate("COMMON.VALIDATION_ERROR_TITLE", req.user.language), i18n.translate("COMMON.FIELD_MUST_BE_FILLED", req.user.language, ["role_name"]));
+        if (!body.role_name) throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, i18n.translate("COMMON.VALIDATION_ERROR_TITLE", config.DEFAULT_LANG), i18n.translate("COMMON.FIELD_MUST_BE_FILLED", config.DEFAULT_LANG, ["role_name"]));
         if (!body.permissions || !Array.isArray(body.permissions) || body.permissions.length == 0) {
-            throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, i18n.translate("COMMON.VALIDATION_ERROR_TITLE", req.user.language), i18n.translate("COMMON.FIELD_MUST_BE_ARRAY", req.user.language, ["permissions"]));
+            throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, i18n.translate("COMMON.VALIDATION_ERROR_TITLE", config.DEFAULT_LANG), i18n.translate("COMMON.FIELD_MUST_BE_ARRAY", config.DEFAULT_LANG, ["permissions"]));
         }
 
         let role = new Roles({
@@ -76,12 +77,12 @@ router.post("/update", auth.checkRoles("role_update"), async (req, res) => {
     let body = req.body;
     try {
 
-        if (!body._id) throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, i18n.translate("COMMON.VALIDATION_ERROR_TITLE", req.user.language), i18n.translate("COMMON.FIELD_MUST_BE_FILLED", req.user.language, ["_id"]));
+        if (!body._id) throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, i18n.translate("COMMON.VALIDATION_ERROR_TITLE", config.DEFAULT_LANG), i18n.translate("COMMON.FIELD_MUST_BE_FILLED", config.DEFAULT_LANG, ["_id"]));
 
         let userRole = await UserRoles.findOne({user_id: req.user.id, role_id: body._id});
 
         if(userRole) {
-            throw new CustomError(Enum.HTTP_CODES.FORBIDDEN, i18n.translate("COMMON.NEED_PERMISSIONS", req.user.language), i18n.translate("COMMON.NEED_PERMISSIONS", req.user.language));
+            throw new CustomError(Enum.HTTP_CODES.FORBIDDEN, i18n.translate("COMMON.NEED_PERMISSIONS", config.DEFAULT_LANG), i18n.translate("COMMON.NEED_PERMISSIONS", config.DEFAULT_LANG));
         }
 
         let updates = {};
@@ -98,7 +99,7 @@ router.post("/update", auth.checkRoles("role_update"), async (req, res) => {
             let newPermissions = body.permissions.filter(x => !permissions.map(p => p.permission).includes(x));
 
             if (removedPermissions.length > 0) {
-                await RolePrivileges.remove({ _id: { $in: removedPermissions.map(x => x._id) } });
+                await RolePrivileges.deleteMany({ _id: { $in: removedPermissions.map(x => x._id) } });
             }
 
             if (newPermissions.length > 0) {
@@ -130,9 +131,9 @@ router.post("/delete", auth.checkRoles("role_delete"), async (req, res) => {
     let body = req.body;
     try {
 
-        if (!body._id) throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, i18n.translate("COMMON.VALIDATION_ERROR_TITLE", req.user.language), i18n.translate("COMMON.FIELD_MUST_BE_FILLED", req.user.language, ["_id"]));
+        if (!body._id) throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, i18n.translate("COMMON.VALIDATION_ERROR_TITLE", config.DEFAULT_LANG), i18n.translate("COMMON.FIELD_MUST_BE_FILLED", config.DEFAULT_LANG, ["_id"]));
 
-        await Roles.remove({ _id: body._id });
+        await Roles.deleteOne({ _id: body._id });
 
         res.json(Response.successResponse({ success: true }));
 
