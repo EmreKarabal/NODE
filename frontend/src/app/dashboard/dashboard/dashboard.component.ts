@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service'; // Ensure this import
+import {ApexOptions} from 'ng-apexcharts';
 
 // Keep existing interfaces
 interface User {
@@ -39,6 +40,13 @@ interface Category {
   is_active: boolean;
 }
 
+interface StatisticsData {
+  dailyUsers: {dates: string[], counts: number[]};
+  activeUsers: {dates: string[], counts: number[]};
+  userRoles: {labels: (string | null)[], counts: number[]};
+}
+
+
 @Component({
   selector: 'app-dashboard',
   standalone: false,
@@ -48,9 +56,8 @@ interface Category {
 
 
 export class DashboardComponent implements OnInit {
-
   // Mevcut özellikler
-  activeTab: 'users' | 'roles' | 'categories' = 'users';
+  activeTab: 'users' | 'roles' | 'categories' | 'statistics' = 'users';
   users: User[] = [];
   roles: Role[] = [];
   categories: Category[] = [];
@@ -63,6 +70,43 @@ export class DashboardComponent implements OnInit {
   allPermissions: Permission[] = [];
   
 
+  statisticsData: StatisticsData | null = null;
+  // Graphic options 
+  dailyUsersChart: ApexOptions = {
+    series: [{ name: 'New Users', data: []}],
+    chart: {type: 'line', height:350},
+    dataLabels: {enabled:false},
+    stroke: {curve: 'smooth'},
+    xaxis: {categories: []},
+    title: {text: 'Daily New Users', align:'left'},
+    colors: ['#3F51B5']
+  };
+
+  activeUsersChart: ApexOptions = {
+    series: [{name: 'Active Users', data: [] }],
+    chart: { type: 'area', height: 350 },
+    dataLabels: { enabled: false },
+    stroke: { curve: 'smooth' },
+    fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.7, opacityTo: 0.3 } },
+    xaxis: { categories: [] },
+    title: { text: 'Active Users', align: 'left' },
+    colors: ['#4CAF50']
+  };
+
+  userRolesChart: ApexOptions = {
+    series: [],
+    chart: { type: 'pie', height: 350 },
+    labels: [],
+    title: { text: 'User Roles Distribution', align: 'left' },
+    legend: { position: 'bottom' },
+    responsive: [{
+      breakpoint: 480,
+      options: { chart: { width: 300 }, legend: { position: 'bottom' } }
+    }]
+  };
+
+
+
   constructor(
     private apiService: ApiService,
     private authService: AuthService
@@ -72,9 +116,11 @@ export class DashboardComponent implements OnInit {
     // Sadece veri yükleme
     this.loadData();
     this.getAllRoles();
+    this.loadStatistics();
+
   }
 
-  switchTab(tab: 'users' | 'roles' | 'categories') {
+  switchTab(tab: 'users' | 'roles' | 'categories'| 'statistics') {
     this.activeTab = tab;
     this.loadData();
   }
@@ -376,6 +422,51 @@ export class DashboardComponent implements OnInit {
     else {
       this.selectedPermissions.splice(index, 1);
     }
+  }
+
+
+  loadStatistics(): void {
+
+    this.apiService.getUserStatistics().subscribe({
+      next: (response) => {
+        this.statisticsData = response;
+        this.updateCharts();
+      },
+      error: (error) => {
+        console.error('Error while loading statistics', error);
+      }
+    });
+
+  }
+
+  updateCharts(): void {
+    if (!this.statisticsData) return;
+  
+    // Daily Users Chart Güncelleme
+    (this.dailyUsersChart.series as ApexAxisChartSeries) = [{
+      name: 'New Users',
+      data: this.statisticsData.dailyUsers.counts
+    }];
+    this.dailyUsersChart.xaxis = {
+      categories: this.statisticsData.dailyUsers.dates.map(date => 
+        new Date(date).toLocaleDateString('tr-TR')
+      )
+    };
+  
+    // Active Users Chart Güncelleme
+    (this.activeUsersChart.series as ApexAxisChartSeries) = [{
+      name: 'Active Users',
+      data: this.statisticsData.activeUsers.counts
+    }];
+    this.activeUsersChart.xaxis = {
+      categories: this.statisticsData.activeUsers.dates.map(date => 
+        new Date(date).toLocaleDateString('tr-TR')
+      )
+    };
+  
+    (this.userRolesChart.series as ApexNonAxisChartSeries) = this.statisticsData.userRoles.counts;
+    console.log("roller: ",  this.statisticsData.userRoles.labels);
+    this.userRolesChart.labels = this.statisticsData.userRoles.labels.filter(label => label !== null) as string[];
   }
 
 }

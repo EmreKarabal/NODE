@@ -12,7 +12,7 @@ const config = require('../config');
 var router = express.Router();
 const auth = require("../lib/auth")();
 const i18n = new (require("../lib/i18n"))(config.DEFAULT_LANG);
-const {rateLimit} = require("express-rate-limit");
+const { rateLimit } = require("express-rate-limit");
 const RateLimitMongo = require("rate-limit-mongo");
 
 
@@ -20,9 +20,9 @@ const limiter = rateLimit({
   store: new RateLimitMongo({
     uri: config.CONNECTION_STRING,
     collectionName: "rateLimits",
-    expireTimeMs: 15*60*1000 // 15 dakika
+    expireTimeMs: 15 * 60 * 1000 // 15 dakika
   }),
-  windowMs: 15*60*1000, // 15 dakika
+  windowMs: 15 * 60 * 1000, // 15 dakika
   limit: 5, // 5 adet deneme hakkı
   legacyHeaders: false
 });
@@ -100,13 +100,14 @@ router.post("/auth", limiter, async (req, res) => {
 
     let token = jwt.encode(payload, config.JWT.SECRET);
 
-    let userRoles = await UserRoles.find({ user_id: user._id}).populate("role_id");
+    let userRoles = await UserRoles.find({ user_id: user._id }).populate("role_id");
     let roles = userRoles.map(role => role.role_id.role_name);
 
     let userData = {
       _id: user._id,
       first_name: user.first_name,
       last_name: user.last_name,
+      last_login: new Date(Date.now()),
       roles
     };
 
@@ -132,7 +133,7 @@ router.post("/add", /*auth.checkRoles("user_add"),*/ async (req, res) => {
       throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, i18n.translate("COMMON.VALIDATION_ERROR_TITLE", config.DEFAULT_LANG), i18n.translate("COMMON.PASSWORD_LENGTH_ERROR", config.DEFAULT_LANG));
     }
 
-    
+
     if (!body.roles || !Array.isArray(body.roles) || body.roles.length == 0) {
       throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, i18n.translate("COMMON.VALIDATION_ERROR_TITLE", config.DEFAULT_LANG), i18n.translate("COMMON.FIELD_MUST_BE_ARRAY", config.DEFAULT_LANG, ["roles"]));
     }
@@ -140,9 +141,9 @@ router.post("/add", /*auth.checkRoles("user_add"),*/ async (req, res) => {
     let roles = await Roles.find({ _id: { $in: body.roles } });
 
     if (roles.length == 0) {
-       throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, i18n.translate("COMMON.VALIDATION_ERROR_TITLE", config.DEFAULT_LANG), i18n.translate("COMMON.FIELD_MUST_BE_ARRAY", config.DEFAULT_LANG, ["roles"]));
+      throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, i18n.translate("COMMON.VALIDATION_ERROR_TITLE", config.DEFAULT_LANG), i18n.translate("COMMON.FIELD_MUST_BE_ARRAY", config.DEFAULT_LANG, ["roles"]));
     }
-    
+
 
     let password = bcrypt.hashSync(body.password, bcrypt.genSaltSync(8), null);
 
@@ -155,21 +156,21 @@ router.post("/add", /*auth.checkRoles("user_add"),*/ async (req, res) => {
       phone_number: body.phone_number
     });
 
-    
+
     for (let i = 0; i < roles.length; i++) {
       await UserRoles.create({
         role_id: roles[i]._id,
         user_id: user._id
       })
     }
-    
+
     res.status(Enum.HTTP_CODES.CREATED).json(Response.successResponse({ success: true }, Enum.HTTP_CODES.CREATED));
 
   } catch (error) {
     res.status(Enum.HTTP_CODES.INT_SERVER_ERROR).json(Response.errorResponse({ success: false }, Enum.HTTP_CODES.CREATED));
   }
 
-   
+
 
 });
 
@@ -180,14 +181,33 @@ router.all("*", auth.authenticate(), (req, res, next) => {
 /* GET users listing. */
 router.get('/', /*auth.checkRoles("user_view"),*/ async (req, res) => {
   try {
-    let users = await Users.find({}, {password: 0}).lean();
 
-    for (let i=0; i<users.length;i++){
-      let roles = await UserRoles.find({user_id: users[i]._id}).populate("role_id"); // role_name değerini rol tablosundan user roles tablosuna foreign key olarak çekebilmek için populate() kullandık.
+    const page = parseInt(req.query.page) || 1;
+    const perPage = parseInt(req.query.per_page) || 10;
+    const skip = (page - 1) * perPage;
+
+    const totalUsers = await Users.countDocuments({});
+
+    let users = await Users.find({}, { password: 0 })
+      .skip(skip)
+      .limit(perPage)
+      .lean();
+
+    for (let i = 0; i < users.length; i++) {
+      let roles = await UserRoles.find({user_id: users[i]._id}).populate("role_id");
       users[i].roles = roles;
     }
 
-    res.json(Response.successResponse(users));
+    res.json(Response.successResponse({
+      data: users,
+      pagination: {
+        current_page: page,
+        per_page: perPage,
+        total: totalUsers,
+        total_pages: Math.ceil(totalUsers / perPage)
+      }
+    }));
+
 
   } catch (err) {
     let errorResponse = Response.errorResponse(err);
@@ -212,7 +232,7 @@ router.post("/update", auth.checkRoles("user_update"), async (req, res) => {
     if (body.last_name) updates.last_name = body.last_name;
     if (body.phone_number) updates.phone_number = body.phone_number;
 
-    if(body._id == req.user.id) {
+    if (body._id == req.user.id) {
       //throw new CustomError(Enum.HTTP_CODES.FORBIDDEN, i18n.translate("COMMON.NEED_PERMISSIONS", config.DEFAULT_LANG), i18n.translate("COMMON.NEED_PERMISSIONS", config.DEFAULT_LANG, ["_id"]));
       body.roles = null;
     }

@@ -1,85 +1,91 @@
 {
-  "hash": "97a23ae9",
-  "configHash": "ff270d51",
-  "lockfileHash": "baa02ebf",
-  "browserHash": "14beba01",
+  "hash": "bfc261a4",
+  "configHash": "b3dfdc6f",
+  "lockfileHash": "fbf8dfb3",
+  "browserHash": "b66bb85c",
   "optimized": {
     "@angular/common": {
       "src": "../../../../../../node_modules/@angular/common/fesm2022/common.mjs",
       "file": "@angular_common.js",
-      "fileHash": "85a0545f",
+      "fileHash": "fbe43daa",
       "needsInterop": false
     },
     "@angular/common/http": {
       "src": "../../../../../../node_modules/@angular/common/fesm2022/http.mjs",
       "file": "@angular_common_http.js",
-      "fileHash": "48881d3c",
+      "fileHash": "58b1cad5",
       "needsInterop": false
     },
     "@angular/core": {
       "src": "../../../../../../node_modules/@angular/core/fesm2022/core.mjs",
       "file": "@angular_core.js",
-      "fileHash": "a7668245",
+      "fileHash": "94450302",
       "needsInterop": false
     },
     "@angular/forms": {
       "src": "../../../../../../node_modules/@angular/forms/fesm2022/forms.mjs",
       "file": "@angular_forms.js",
-      "fileHash": "ebb12072",
+      "fileHash": "35c836b4",
       "needsInterop": false
     },
     "@angular/platform-browser": {
       "src": "../../../../../../node_modules/@angular/platform-browser/fesm2022/platform-browser.mjs",
       "file": "@angular_platform-browser.js",
-      "fileHash": "2fe2c0f1",
+      "fileHash": "b885a0c9",
       "needsInterop": false
     },
     "@angular/platform-server": {
       "src": "../../../../../../node_modules/@angular/platform-server/fesm2022/platform-server.mjs",
       "file": "@angular_platform-server.js",
-      "fileHash": "f28dccb9",
+      "fileHash": "bf615ff0",
       "needsInterop": false
     },
     "@angular/router": {
       "src": "../../../../../../node_modules/@angular/router/fesm2022/router.mjs",
       "file": "@angular_router.js",
-      "fileHash": "a766c03e",
+      "fileHash": "d7bdaa49",
       "needsInterop": false
     },
     "@angular/ssr": {
       "src": "../../../../../../node_modules/@angular/ssr/fesm2022/ssr.mjs",
       "file": "@angular_ssr.js",
-      "fileHash": "fac3b7a4",
+      "fileHash": "93f9de09",
       "needsInterop": false
     },
     "@angular/ssr/node": {
       "src": "../../../../../../node_modules/@angular/ssr/fesm2022/node.mjs",
       "file": "@angular_ssr_node.js",
-      "fileHash": "7be19ac0",
+      "fileHash": "fe52a0ae",
       "needsInterop": false
     },
     "express": {
       "src": "../../../../../../node_modules/express/index.js",
       "file": "express.js",
-      "fileHash": "41c64031",
+      "fileHash": "925f34dd",
       "needsInterop": true
     },
     "jwt-decode": {
       "src": "../../../../../../node_modules/jwt-decode/build/esm/index.js",
       "file": "jwt-decode.js",
-      "fileHash": "1a63dec5",
+      "fileHash": "41875546",
+      "needsInterop": false
+    },
+    "ng-apexcharts": {
+      "src": "../../../../../../node_modules/ng-apexcharts/fesm2022/ng-apexcharts.mjs",
+      "file": "ng-apexcharts.js",
+      "fileHash": "b90a2346",
       "needsInterop": false
     },
     "rxjs": {
       "src": "../../../../../../node_modules/rxjs/dist/cjs/index.js",
       "file": "rxjs.js",
-      "fileHash": "41223db8",
+      "fileHash": "1b7cfcfd",
       "needsInterop": true
     },
     "rxjs/operators": {
       "src": "../../../../../../node_modules/rxjs/dist/cjs/operators/index.js",
       "file": "rxjs_operators.js",
-      "fileHash": "7ffeb05f",
+      "fileHash": "7f4cd46a",
       "needsInterop": true
     }
   },
@@ -87,14 +93,17 @@
     "xhr2-TXIMV6CV": {
       "file": "xhr2-TXIMV6CV.js"
     },
-    "chunk-LXRSY4J5": {
-      "file": "chunk-LXRSY4J5.js"
+    "apexcharts.esm-NRMLMUT3": {
+      "file": "apexcharts__esm-NRMLMUT3.js"
     },
-    "chunk-XSX64AV7": {
-      "file": "chunk-XSX64AV7.js"
+    "chunk-OZYMCZUC": {
+      "file": "chunk-OZYMCZUC.js"
     },
     "chunk-NZEAHX7G": {
       "file": "chunk-NZEAHX7G.js"
+    },
+    "chunk-XSX64AV7": {
+      "file": "chunk-XSX64AV7.js"
     },
     "chunk-7KV5ZRHB": {
       "file": "chunk-7KV5ZRHB.js"

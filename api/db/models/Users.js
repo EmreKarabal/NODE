@@ -12,6 +12,7 @@ const schema = mongoose.Schema({
     first_name: String,
     last_name: String,
     phone_number: String,
+    last_login: {type: Date, required: false},
     language: {type: String, required: true, default: DEFAULT_LANG}
 }, {
     versionKey: false,

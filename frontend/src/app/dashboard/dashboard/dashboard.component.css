@@ -75,3 +75,29 @@
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
 }
+
+
+/* Grafik kartları için stil */
+.statistics-card {
+  transition: all 0.3s ease;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.statistics-card:hover {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+/* Grafiklerin responsive olması için */
+apx-chart {
+  width: 100%;
+  display: block;
+}
+
+/* Tablo stilleri (mevcut stilleriniz) */
+.table-responsive {
+  overflow-x: auto;
+}

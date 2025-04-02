@@ -12,6 +12,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { DashboardComponent } from './dashboard/dashboard/dashboard.component';
 import { AuthGuardInterceptor } from './core/interceptors/auth-guard.interceptor';
+import { NgApexchartsModule } from 'ng-apexcharts';
 
 
 @NgModule({
@@ -28,6 +29,7 @@ import { AuthGuardInterceptor } from './core/interceptors/auth-guard.interceptor
     RouterModule,
     AppRoutingModule,
     ReactiveFormsModule,
+    NgApexchartsModule,
     HttpClientModule
   ],
   providers: [

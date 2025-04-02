@@ -26,6 +26,7 @@ app.use(cors({
 }));
 
 
+
 app.use('/api', require('./routes/index'));
 app.use('/users', require('./routes/users'))
 

@@ -32,6 +32,14 @@
         Categories
       </a>
     </li>
+    <li class="nav-item">
+      <a 
+        class="nav-link" 
+        [class.active]="activeTab === 'statistics'"
+        (click)="switchTab('statistics')">
+        Statistics
+      </a>
+    </li>
   </ul>
 
   <!-- Users Tab -->
@@ -210,6 +218,66 @@
       </div>
     </div>
   </div>
+  
+  <!-- Statistics Tab -->
+<div *ngIf="activeTab === 'statistics'" class="card">
+  <div class="card-header">
+    <h5 class="card-title mb-0">System Statistics</h5>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <!-- Daily Users Chart -->
+      <div class="col-md-6 mb-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <apx-chart 
+              [series]="dailyUsersChart.series!" 
+              [chart]="dailyUsersChart.chart!" 
+              [xaxis]="dailyUsersChart.xaxis!"
+              [title]="dailyUsersChart.title!"
+              [stroke]="dailyUsersChart.stroke!"
+              [colors]="dailyUsersChart.colors!"
+              [dataLabels]="dailyUsersChart.dataLabels!">
+            </apx-chart>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Active Users Chart -->
+      <div class="col-md-6 mb-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <apx-chart 
+              [series]="activeUsersChart.series!" 
+              [chart]="activeUsersChart.chart!" 
+              [xaxis]="activeUsersChart.xaxis!"
+              [title]="activeUsersChart.title!"
+              [fill]="activeUsersChart.fill!"
+              [colors]="activeUsersChart.colors!"
+              [dataLabels]="activeUsersChart.dataLabels!">
+            </apx-chart>
+          </div>
+        </div>
+      </div>
+      
+      <!-- User Roles Chart -->
+      <div class="col-12 col-lg-6 mb-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <apx-chart 
+              [series]="userRolesChart.series!" 
+              [chart]="userRolesChart.chart!" 
+              [labels]="userRolesChart.labels!"
+              [title]="userRolesChart.title!"
+              [legend]="userRolesChart.legend!"
+              [responsive]="userRolesChart.responsive!">
+            </apx-chart>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
   <!-- Modal -->
   <div 

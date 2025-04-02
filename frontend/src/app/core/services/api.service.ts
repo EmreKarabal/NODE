@@ -79,4 +79,14 @@ export class ApiService {
   deleteCategory(categoryId: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/categories/delete`, { _id: categoryId});
   }
+
+  // Statistics
+  getUserStatistics(){
+    return this.http.get<{
+      dailyUsers: {dates: string[], counts: number[] }, 
+      activeUsers: {dates:string[], counts:number[] },
+      userRoles: {labels: string[], counts: number[] }
+    }>(`${this.baseUrl}/statistics`);
+  }
+
 }
