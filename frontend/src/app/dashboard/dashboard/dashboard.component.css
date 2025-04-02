@@ -101,3 +101,22 @@ apx-chart {
 .table-responsive {
   overflow-x: auto;
 }
+
+/* dashboard.component.css */
+.pagination {
+  margin-bottom: 0;
+}
+
+.page-item {
+  cursor: pointer;
+}
+
+.items-per-page {
+  width: 120px;
+  margin-left: 15px;
+}
+
+.card-footer {
+  background-color: #f8f9fa;
+  border-top: 1px solid rgba(0,0,0,.125);
+}

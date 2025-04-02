@@ -11,6 +11,7 @@ import { Observable } from 'rxjs';
 export class AuthInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     // Check if we're in a browser environment
+    console.log("istek url: ", request.url);
     if (typeof window !== 'undefined') {
       const token = localStorage.getItem('access_token');
       

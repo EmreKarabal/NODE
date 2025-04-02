@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service'; // Ensure this import
-import {ApexOptions} from 'ng-apexcharts';
+import { ApexOptions } from 'ng-apexcharts';
 
 // Keep existing interfaces
 interface User {
@@ -41,9 +41,9 @@ interface Category {
 }
 
 interface StatisticsData {
-  dailyUsers: {dates: string[], counts: number[]};
-  activeUsers: {dates: string[], counts: number[]};
-  userRoles: {labels: (string | null)[], counts: number[]};
+  dailyUsers: { dates: string[], counts: number[] };
+  activeUsers: { dates: string[], counts: number[] };
+  userRoles: { labels: (string | null)[], counts: number[] };
 }
 
 
@@ -68,22 +68,22 @@ export class DashboardComponent implements OnInit {
 
   allRoles: Role[] = [];
   allPermissions: Permission[] = [];
-  
+
 
   statisticsData: StatisticsData | null = null;
   // Graphic options 
   dailyUsersChart: ApexOptions = {
-    series: [{ name: 'New Users', data: []}],
-    chart: {type: 'line', height:350},
-    dataLabels: {enabled:false},
-    stroke: {curve: 'smooth'},
-    xaxis: {categories: []},
-    title: {text: 'Daily New Users', align:'left'},
+    series: [{ name: 'New Users', data: [] }],
+    chart: { type: 'line', height: 350 },
+    dataLabels: { enabled: false },
+    stroke: { curve: 'smooth' },
+    xaxis: { categories: [] },
+    title: { text: 'Daily New Users', align: 'left' },
     colors: ['#3F51B5']
   };
 
   activeUsersChart: ApexOptions = {
-    series: [{name: 'Active Users', data: [] }],
+    series: [{ name: 'Active Users', data: [] }],
     chart: { type: 'area', height: 350 },
     dataLabels: { enabled: false },
     stroke: { curve: 'smooth' },
@@ -106,6 +106,10 @@ export class DashboardComponent implements OnInit {
   };
 
 
+  currentPage: number = 1;
+  itemsPerPage: number = 2;
+  totalItems: number = 0;
+  totalPages: number = 1;
 
   constructor(
     private apiService: ApiService,
@@ -120,14 +124,14 @@ export class DashboardComponent implements OnInit {
 
   }
 
-  switchTab(tab: 'users' | 'roles' | 'categories'| 'statistics') {
+  switchTab(tab: 'users' | 'roles' | 'categories' | 'statistics') {
     this.activeTab = tab;
     this.loadData();
   }
 
   openModal(mode: 'add' | 'edit', entity?: any, event?: Event) {
 
-    if(event){
+    if (event) {
       event.stopPropagation();
     }
 
@@ -152,16 +156,16 @@ export class DashboardComponent implements OnInit {
       };
     } else {
       // Düzenleme modunda mevcut seçimleri koru
-      this.currentEntity = { 
+      this.currentEntity = {
         ...entity,
         roles: entity.roles ? [...entity.roles] : [],
         permissions: entity.permissions ? [...entity.permissions] : []
       };
 
-      if(this.activeTab === 'roles' && entity.permissions){
+      if (this.activeTab === 'roles' && entity.permissions) {
         this.selectedPermissions = entity.permissions.map((perm: Permission) => perm.permission);
       }
-      
+
       // Eğer roles object array olarak geliyorsa
       if (entity.roles && entity.roles.length > 0 && typeof entity.roles[0] === 'object') {
         this.currentEntity.roles = entity.roles.map((r: any) => r._id);
@@ -170,10 +174,10 @@ export class DashboardComponent implements OnInit {
 
   }
 
-  closeModal(event?: Event){
+  closeModal(event?: Event) {
 
-    if(event) {
-      if(event.target === event.currentTarget){
+    if (event) {
+      if (event.target === event.currentTarget) {
         this.isModalOpen = false;
         this.currentEntity = {};
       }
@@ -182,14 +186,14 @@ export class DashboardComponent implements OnInit {
       this.currentEntity = {};
     }
 
-    
+
   }
 
   saveEntity(type: string) {
     // Backend izin kontrolüne güven
-    switch(this.activeTab){
+    switch (this.activeTab) {
       case 'users':
-        if(this.modalMode === 'add'){
+        if (this.modalMode === 'add') {
           this.apiService.addUser(this.currentEntity).subscribe(
             response => {
               console.log('user created!');
@@ -213,9 +217,9 @@ export class DashboardComponent implements OnInit {
           );
         }
         break;
-      
+
       case 'roles':
-        if(this.modalMode === 'add'){
+        if (this.modalMode === 'add') {
 
           const roleData = {
             role_name: this.currentEntity.role_name,
@@ -256,7 +260,7 @@ export class DashboardComponent implements OnInit {
         break;
 
       case 'categories':
-        if(this.modalMode === 'add'){
+        if (this.modalMode === 'add') {
           this.apiService.addCategory(this.currentEntity).subscribe(
             response => {
               this.loadData();
@@ -264,7 +268,7 @@ export class DashboardComponent implements OnInit {
               this.closeModal();
             },
             error => console.error('Error while adding category! ', error)
-            
+
           );
         } else {
           this.apiService.updateCategory(this.currentEntity).subscribe(
@@ -282,26 +286,26 @@ export class DashboardComponent implements OnInit {
 
   deleteEntity(type: string, id: string) {
     // Backend izin kontrolüne güven
-    if(!confirm('Are you sure you want to delete this item?')) return;
+    if (!confirm('Are you sure you want to delete this item?')) return;
 
-    switch(type) {
+    switch (type) {
       case 'users':
         this.apiService.deleteUser(id).subscribe(
-          response => {this.loadData();},
+          response => { this.loadData(); },
           error => console.error('Error while deleting user!', error)
-        ); 
+        );
         break;
-      
-      case 'roles': 
+
+      case 'roles':
         this.apiService.deleteRole(id).subscribe(
-          response => {this.loadData();},
+          response => { this.loadData(); },
           error => console.error('Error while deleting role! ', error)
         );
         break;
-      
+
       case 'categories':
         this.apiService.deleteCategory(id).subscribe(
-          response => {this.loadData();},
+          response => { this.loadData(); },
           error => console.error('Error while deleting category! ', error)
         );
         break;
@@ -311,8 +315,12 @@ export class DashboardComponent implements OnInit {
   loadData(): void {
     switch (this.activeTab) {
       case 'users':
-        this.apiService.getUsers().subscribe(
-          response => this.users = response.data || [],
+        this.apiService.getUsers(this.currentPage, this.itemsPerPage).subscribe(
+          response => {
+            this.users = response.data.data;
+            this.totalItems = response.data.pagination.total;
+            this.totalPages = response.data.pagination.total_pages;
+          },
           error => console.error('Error while loading users! ', error)
         );
         break;
@@ -335,7 +343,7 @@ export class DashboardComponent implements OnInit {
 
   // Yardımcı metodlar aynen kalacak
   getUserRoles(user: User): string {
-    if (!user.roles || user.roles.length == 0){
+    if (!user.roles || user.roles.length == 0) {
       return 'No roles';
     }
 
@@ -344,19 +352,19 @@ export class DashboardComponent implements OnInit {
   }
 
   getPermissions(role: Role): string {
-    
+
     if (role.permissions && role.permissions.length > 0) {
-      return role.permissions.map(perm => perm.permission). join(', ');
+      return role.permissions.map(perm => perm.permission).join(', ');
     }
 
     return 'No permissions';
 
   }
 
-  getAllRoles(){
+  getAllRoles() {
     this.apiService.getRoles().subscribe({
       next: (response: any) => {
-        if (response.code === 200){
+        if (response.code === 200) {
           this.allRoles = response.data;
 
           this.allPermissions = this.extractUniquePermissions(response.data).filter(
@@ -376,7 +384,7 @@ export class DashboardComponent implements OnInit {
 
     roles.forEach(role => {
       role.permissions?.forEach(perm => {
-        if(!map.has(perm.permission)) {
+        if (!map.has(perm.permission)) {
           map.set(perm.permission, {
             _id: perm._id,
             permission: perm.permission,
@@ -394,12 +402,12 @@ export class DashboardComponent implements OnInit {
   }
 
   toggleRoleSelection(roleId: string): void {
-    if(!this.currentEntity.roles) {
+    if (!this.currentEntity.roles) {
       this.currentEntity.roles = [];
     }
 
     const index = this.currentEntity.roles.indexOf(roleId);
-    if(index === -1) {
+    if (index === -1) {
       this.currentEntity.roles.push(roleId);
     }
     else {
@@ -416,7 +424,7 @@ export class DashboardComponent implements OnInit {
 
     const index = this.selectedPermissions.indexOf(permissionName);
 
-    if(index === -1) {
+    if (index === -1) {
       this.selectedPermissions.push(permissionName);
     }
     else {
@@ -441,32 +449,77 @@ export class DashboardComponent implements OnInit {
 
   updateCharts(): void {
     if (!this.statisticsData) return;
-  
+
     // Daily Users Chart Güncelleme
     (this.dailyUsersChart.series as ApexAxisChartSeries) = [{
       name: 'New Users',
       data: this.statisticsData.dailyUsers.counts
     }];
     this.dailyUsersChart.xaxis = {
-      categories: this.statisticsData.dailyUsers.dates.map(date => 
+      categories: this.statisticsData.dailyUsers.dates.map(date =>
         new Date(date).toLocaleDateString('tr-TR')
       )
     };
-  
+
     // Active Users Chart Güncelleme
     (this.activeUsersChart.series as ApexAxisChartSeries) = [{
       name: 'Active Users',
       data: this.statisticsData.activeUsers.counts
     }];
     this.activeUsersChart.xaxis = {
-      categories: this.statisticsData.activeUsers.dates.map(date => 
+      categories: this.statisticsData.activeUsers.dates.map(date =>
         new Date(date).toLocaleDateString('tr-TR')
       )
     };
-  
+
     (this.userRolesChart.series as ApexNonAxisChartSeries) = this.statisticsData.userRoles.counts;
-    console.log("roller: ",  this.statisticsData.userRoles.labels);
     this.userRolesChart.labels = this.statisticsData.userRoles.labels.filter(label => label !== null) as string[];
+  }
+
+  changePage(page: number): void {
+
+    if (page >= 1 && page <= this.totalPages && page !== this.currentPage) {
+
+      this.currentPage = page;
+      this.loadData();
+
+    }
+
+  }
+
+  changeItemsPerPage(): void {
+    this.currentPage = 1;
+    this.loadData();
+  }
+
+  getPages(): number[] {
+
+    const pages: number[] = [];
+    const maxVisiblePages = 5;
+
+    let startPage = Math.max(1, this.currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = startPage + maxVisiblePages - 1;
+
+    if (endPage > this.totalPages) {
+      endPage = this.totalPages;
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+
+    return pages;
+
+  }
+
+
+  getDisplayedRange(): string{
+    if(!this.totalItems) return '0 to 0 of 0 entries';
+
+    const start = (this.currentPage - 1) * this.itemsPerPage + 1;
+    const end = Math.min((this.currentPage * this.itemsPerPage), this.totalItems);
+    return `${start} to ${end} of ${this.totalItems} entries`; 
   }
 
 }

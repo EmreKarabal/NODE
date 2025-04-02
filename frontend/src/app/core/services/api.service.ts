@@ -1,5 +1,5 @@
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { last, Observable } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
 
@@ -22,15 +22,23 @@ export class ApiService {
   }
 
   // Users
-  getUsers(): Observable<any> {
-
+  getUsers(page:number = 1, perPage: number = 2): Observable<any> {
+    
     const token = this.getToken();
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
     });
+    
 
-    return this.http.get<any[]>(`${this.baseUrl}/users`, {headers});
+    const params = new HttpParams()
+    .set('page', page.toString())
+    .set('per_page', perPage.toString());
+
+    return this.http.get<any[]>(`${this.baseUrl}/users`, {
+      headers: headers,
+      params: params
+  });
   }
 
   addUser(user: any): Observable<any> {
