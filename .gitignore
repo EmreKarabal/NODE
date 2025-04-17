@@ -1,6 +1,6 @@
-node_modules/
-package-lock.json
-.env
+api/node_modules/
+api/package-lock.json
+api/.env
 Dockerfile
 .dockerignore
 frontend/.angular

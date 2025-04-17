@@ -23,6 +23,29 @@ router.get('/', async (req, res) => {
     }
 });
 
+router.get('/:id', async (req, res) => {
+
+    try {
+
+        const customerId = req.params.id;
+
+        if(!customerId) throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, 'id parameter required', 'customer._id required');
+
+        const customer = await Customer.find({ _id: customerId}).select('-password');
+
+        if(!customer) throw new CustomError(Enum.HTTP_CODES.NOT_FOUND, 'Customer not found', 'Customer could not be found in db');
+
+        res.json(Response.successResponse({
+            data: customer
+        }));
+
+    } catch (error) {
+        let errorResponse = Response.errorResponse(error);
+        res.status(errorResponse.code).json(errorResponse);
+    }
+
+});
+
 
 router.post('/add', async (req, res) => {
     try {
@@ -44,7 +67,7 @@ router.post('/add', async (req, res) => {
             phone_number: body.phone_number
         });
 
-        res.status(Enum.HTTP_CODES.CREATED).json(Response.successResponse({ success: true}, Enum.HTTP_CODES.CREATED));
+        res.status(Enum.HTTP_CODES.CREATED).json(Response.successResponse({ success: true, _id: customer._id}, Enum.HTTP_CODES.CREATED));
 
     } catch(err) {
         let errorResponse = Response.errorResponse(err);
