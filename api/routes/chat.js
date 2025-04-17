@@ -10,7 +10,7 @@ router.post('/message', async (req, res) => {
     try {
 
         const userMessage = req.body.message;
-        const customPrompt = req.body.customPrompt || '';
+        const customPrompt = req.body.customPrompt || 'Sen bir asistansın. Cevaplarında yardımcı olmaya çalış ve kısa cevaplar ver.';
 
         const botResponse = await axios.post(
             'https://api.groq.com/openai/v1/chat/completions',

@@ -11,7 +11,7 @@ const Enum = require('../config/Enum');
 router.get('/', async (req, res) => {
     try {
         
-        let customers = await Customer.find().select('-password');
+        let customers = await Customer.find();
 
         res.json(Response.successResponse({
             data: customers
@@ -31,7 +31,7 @@ router.get('/:id', async (req, res) => {
 
         if(!customerId) throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, 'id parameter required', 'customer._id required');
 
-        const customer = await Customer.find({ _id: customerId}).select('-password');
+        const customer = await Customer.find({ _id: customerId});
 
         if(!customer) throw new CustomError(Enum.HTTP_CODES.NOT_FOUND, 'Customer not found', 'Customer could not be found in db');
 
@@ -52,19 +52,14 @@ router.post('/add', async (req, res) => {
 
         let body = req.body;
 
-        if(!body.email) throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, "email field must be filled", "email field must be filled");
-        if(!body.password) throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, "password field must be filled", "password field must be filled");
-        if(body.password.length < Enum.PASS_LENGTH) throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, "password must be at least 8 characters", "password must be at least 8 characters");
-
-        let password = bcrypt.hashSync(body.password, bcrypt.genSaltSync(8), null);
-
+        if(!body.firm_name) throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, "firm_name field must be filled", "firm_name field must be filled");
+        if(!body.custom_prompt) throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, "custom_prompt field must be filled", "custom_prompt field must be filled");
+        
+        
         let customer = await Customer.create({
-            email: body.email,
-            password,
-            is_active: true,
-            first_name: body.first_name,
-            last_name: body.last_name,
-            phone_number: body.phone_number
+            firm_name: body.firm_name,
+            custom_prompt: body.custom_prompt,
+            is_active: true
         });
 
         res.status(Enum.HTTP_CODES.CREATED).json(Response.successResponse({ success: true, _id: customer._id}, Enum.HTTP_CODES.CREATED));
@@ -86,10 +81,8 @@ router.post('/update', async (req, res) => {
         if(!body._id) throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, "id field required", "_id field required to make updates");
 
         if(typeof body.is_active === 'boolean') updates.is_active = body.is_active;
-        if(body.first_name) updates.first_name = body.first_name;
-        if(body.last_name) updates.last_name = body.last_name;
-        if(body.phone_number) updates.phone_number = body.phone_number;
-
+        if(body.firm_name) updates.firm_name = body.firm_name;
+        if(body.custom_prompt) updates.custom_prompt = body.custom_prompt;
 
         await Customer.updateOne({ _id: body._id}, updates);
         res.json(Response.successResponse({ success: true}));

@@ -118,6 +118,7 @@ export class ApiService {
     return this.http.get<any>(`${this.baseUrl}/customers/${id}`);
   }
 
+  
   validateCustomerAccess(customerId: string, userId: string) {
     return this.http.post<any>(`${this.baseUrl}/customers/validate-access`, {
       customerId,
@@ -125,8 +126,9 @@ export class ApiService {
     });
   }
 
-  sendChatMessage(message: string) {
+  sendChatMessage(customPrompt: string,message: string) {
     return this.http.post<any>(`${this.baseUrl}/chat/message`, {
+      customPrompt,
       message
     });
   }

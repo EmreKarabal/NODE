@@ -48,14 +48,10 @@ interface StatisticsData {
 
 interface Customer {
   _id: string;
-  email: string;
-  password?: string;
-  first_name?: string;
-  last_name?: string;
-  phone_number?: string;
+  firm_name: string;
+  custom_prompt: string;
   is_active: boolean;
   url_slug: string;
-  created_at: Date;
 }
 
 @Component({
@@ -333,16 +329,8 @@ export class DashboardComponent implements OnInit {
         }
         else {
 
-          if(this.currentEntity.name !== this.originalEntity.name){
-            const urlSlug = this.currentEntity._id
-            .toLowerCase()
-            .replace(/\s+/g, '-')
-            .replace(/[^\w\-]+/g, '')
-            .replace(/\-\-+/g, '-')
-            .trim();
-            
-            this.currentEntity.url_slug = urlSlug;
-          }
+          console.log('cokomelli: ', 
+            this.apiService.getCustomerById(this.currentEntity._id).subscribe());
 
           this.apiService.updateCustomer(this.currentEntity).subscribe(
             response => {

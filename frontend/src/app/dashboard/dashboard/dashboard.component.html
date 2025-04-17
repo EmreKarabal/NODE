@@ -339,8 +339,8 @@
       <table class="table table-striped table-hover">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Email</th>
+            <th>Firm Name</th>
+            <th>Custom Prompt</th>
             <th>Status</th>
             <th>Customer URL</th>
             <th>Actions</th>
@@ -348,8 +348,8 @@
         </thead>
         <tbody>
           <tr *ngFor="let customer of customers">
-            <td>{{customer.first_name}} {{customer.last_name}}</td>
-            <td>{{customer.email}}</td>
+            <td>{{customer.firm_name}}</td>
+            <td>{{customer.custom_prompt}}</td>
             <td>
               <span 
                 class="badge"
@@ -540,39 +540,21 @@
             </div>
             <div *ngIf="activeTab === 'customers'">
               <div class="mb-3">
-                <label class="form-label">First Name</label>
+                <label class="form-label">Firm Name</label>
                 <input
                   type="text"
                   class="form-control"
-                  [(ngModel)]="currentEntity.first_name"
-                  name="first_name"
+                  [(ngModel)]="currentEntity.firm_name"
+                  name="firm_name"
                   required>
               </div>
               <div class="mb-3">
-                <label class="form-label">Last Name</label>
+                <label class="form-label">Custom Prompt</label>
                 <input
                   type="text"
                   class="form-control"
-                  [(ngModel)]="currentEntity.last_name"
-                  name="last_name"
-                  required>
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Email</label>
-                <input
-                  type="email"
-                  class="form-control"
-                  [(ngModel)]="currentEntity.email"
-                  name="email"
-                  required>
-              </div>
-              <div class="mb-3" *ngIf="modalMode === 'add'">
-                <label class="form-label">Password</label>
-                <input
-                  type="password"
-                  class="form-control"
-                  [(ngModel)]="currentEntity.password"
-                  name="password"
+                  [(ngModel)]="currentEntity.custom_prompt"
+                  name="custom_prompt"
                   required>
               </div>
               <div class="mb-3 form-check">

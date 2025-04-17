@@ -1,19 +1,53 @@
-<div class="chat-container">
+<!-- customer-chat.component.html -->
+<div class="chat-widget">
+  <!-- Chat Button -->
+  <button 
+    class="chat-button" 
+    [ngClass]="{'active': isChatOpen}" 
+    (click)="toggleChat()">
+    <img src="assets/images/chat-icon.png" alt="Chat" class="chat-icon">
+  </button>
+  
+  <!-- Chat Window -->
+  <div class="chat-window" [ngClass]="{'open': isChatOpen}">
     <!-- Header -->
     <div class="chat-header">
-      <h2>{{ customerName }} - Chatbot</h2>
+      <div class="chat-title">
+        <img src="assets/images/avatar.png" alt="Bot" class="bot-avatar">
+        <h5>{{ chatbotName }}</h5>
+      </div>
+      <div class="chat-actions">
+        <button class="btn btn-sm" (click)="refreshChat()"><i class="fas fa-sync-alt"></i></button>
+        <button class="btn btn-sm" (click)="toggleChat()"><i class="fas fa-times"></i></button>
+      </div>
     </div>
-  
+
+    <!-- Welcome Message If No Messages -->
+    <div class="welcome-container" *ngIf="messages.length === 0">
+      <p>Üyelik girişi yapmadan devam etmek istersen, işte yardımcı olabileceğim bazı konular:</p>
+      <p>Birini seçerek devam edebilir ya da talebini bir kaç kelime ile yazabilirsin.</p>
+      
+      <div class="quick-options">
+        <button class="quick-option-btn" (click)="selectOption('Bagaj Hakkı Sorgulama')">Bagaj Hakkı Sorgulama</button>
+        <button class="quick-option-btn" (click)="selectOption('Bilet Bilgileri Sorgulama')">Bilet Bilgileri Sorgulama</button>
+        <button class="quick-option-btn" (click)="selectOption('Başvuru Sorgulama')">Başvuru Sorgulama</button>
+        <button class="quick-option-btn" (click)="selectOption('Uçuş Durumu Sorgulama')">Uçuş Durumu Sorgulama</button>
+        <button class="quick-option-btn" (click)="selectOption('ChatGPT ile Seyahatini Planla')">ChatGPT ile Seyahatini Planla</button>
+        <button class="quick-option-btn" (click)="selectOption('Diğer Konular')">Diğer Konular</button>
+      </div>
+    </div>
+
     <!-- Messages Area -->
-    <div class="messages-container">
+    <div class="messages-container" *ngIf="messages.length > 0">
       <div *ngFor="let message of messages" 
            [ngClass]="{'message': true, 'user-message': message.isUser, 'bot-message': !message.isUser}">
         <div class="message-content">
+          <img *ngIf="!message.isUser" src="assets/images/avatar.png" class="message-avatar">
           <p>{{ message.text }}</p>
           <small class="message-time">{{ message.timestamp | date:'HH:mm' }}</small>
         </div>
       </div>
-  
+
       <!-- Loading indicator -->
       <div *ngIf="isLoading" class="loading-indicator">
         <div class="typing-indicator">
@@ -23,16 +57,17 @@
         </div>
       </div>
     </div>
-  
+
     <!-- Input Area -->
     <div class="input-container">
       <input type="text" 
              class="message-input" 
              [(ngModel)]="newMessage" 
-             placeholder="Mesajınızı yazın..." 
+             placeholder="Mesajınızı buraya yazınız!" 
              (keyup.enter)="sendMessage()">
       <button class="send-button" [disabled]="!newMessage.trim() || isLoading" (click)="sendMessage()">
-        <i class="fas fa-paper-plane"></i> Gönder
+        <i class="fas fa-paper-plane"></i>
       </button>
     </div>
   </div>
+</div>
