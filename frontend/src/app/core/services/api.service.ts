@@ -41,8 +41,16 @@ export class ApiService {
   });
   }
 
+  getCustomers(): Observable<any>{
+    return this.http.get<any[]>(`${this.baseUrl}/customers`);
+  }
+
   addUser(user: any): Observable<any> {
     return this.http.post<any[]>(`${this.baseUrl}/users/add`, user);
+  }
+
+  addCustomer(customer: any): Observable<any> {
+    return this.http.post<any[]>(`${this.baseUrl}/customers/add`, customer);
   }
 
   updateUser(user: any): Observable<any> {
@@ -50,8 +58,17 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}/users/update`, user);
   }
 
+  updateCustomer(customer: any): Observable<any>{
+    console.log('Updating this customer: ', customer);
+    return this.http.post(`${this.baseUrl}/customers/update`, customer);
+  }
+
   deleteUser(userId: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/users/delete`, {_id: userId});
+  }
+
+  deleteCustomer(customerId: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/customers/delete`, { _id: customerId });
   }
 
   // Roles
@@ -95,6 +112,24 @@ export class ApiService {
       activeUsers: {dates:string[], counts:number[] },
       userRoles: {labels: string[], counts: number[] }
     }>(`${this.baseUrl}/statistics`);
+  }
+
+  getCustomerById(id: string) {
+    return this.http.get<any>(`${this.baseUrl}/customers/${id}`);
+  }
+
+  validateCustomerAccess(customerId: string, userId: string) {
+    return this.http.post<any>(`${this.baseUrl}/customers/validate-access`, {
+      customerId,
+      userId
+    });
+  }
+
+  sendChatMessage(customerId: string, message: string) {
+    return this.http.post<any>(`${this.baseUrl}/chat/message`, {
+      customerId, 
+      message
+    });
   }
 
 }

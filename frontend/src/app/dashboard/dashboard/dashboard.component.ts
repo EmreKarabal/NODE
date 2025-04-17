@@ -46,6 +46,17 @@ interface StatisticsData {
   userRoles: { labels: (string | null)[], counts: number[] };
 }
 
+interface Customer {
+  _id: string;
+  email: string;
+  password?: string;
+  first_name?: string;
+  last_name?: string;
+  phone_number?: string;
+  is_active: boolean;
+  url_slug: string;
+  created_at: Date;
+}
 
 @Component({
   selector: 'app-dashboard',
@@ -57,18 +68,20 @@ interface StatisticsData {
 
 export class DashboardComponent implements OnInit {
   // Mevcut özellikler
-  activeTab: 'users' | 'roles' | 'categories' | 'statistics' = 'users';
+  activeTab: 'users' | 'roles' | 'categories' | 'statistics' | 'customers' = 'users';
   users: User[] = [];
   roles: Role[] = [];
   categories: Category[] = [];
   isModalOpen = false;
   modalMode: 'add' | 'edit' = 'add';
   currentEntity: any = {};
+  originalEntity: any = {};
   selectedPermissions: string[] = [];
 
   allRoles: Role[] = [];
   allPermissions: Permission[] = [];
 
+  customers: Customer[] = [];
 
   statisticsData: StatisticsData | null = null;
   // Graphic options 
@@ -124,7 +137,7 @@ export class DashboardComponent implements OnInit {
 
   }
 
-  switchTab(tab: 'users' | 'roles' | 'categories' | 'statistics') {
+  switchTab(tab: 'users' | 'roles' | 'categories' | 'statistics' | 'customers') {
     this.activeTab = tab;
     this.loadData();
   }
@@ -154,7 +167,11 @@ export class DashboardComponent implements OnInit {
         name: '',
         role_name: ''
       };
+      this.originalEntity = {};
     } else {
+
+      this.originalEntity = {...entity};
+
       // Düzenleme modunda mevcut seçimleri koru
       this.currentEntity = {
         ...entity,
@@ -281,6 +298,51 @@ export class DashboardComponent implements OnInit {
           );
         }
         break;
+
+      case 'customers':
+        if(this.modalMode === 'add'){
+
+          const urlSlug = this.currentEntity.name
+          .toLowerCase()
+          .replace(/\s+/g, '-')
+          .replace(/[^\w\*]+/g, '')
+          .replace(/\-\-+/g, '-')
+          .trim();
+
+          this.currentEntity.url_slug = urlSlug;
+
+          this.apiService.addCustomer(this.currentEntity).subscribe(
+            response => {
+              this.loadData();
+              this.currentEntity = {};
+              this.closeModal();
+            },
+            error => console.error('Error while adding customer! ', error)
+          );
+        }
+        else {
+
+          if(this.currentEntity.name !== this.originalEntity.name){
+            const urlSlug = this.currentEntity.name
+            .toLowerCase()
+            .replace(/\s+/g, '-')
+            .replace(/[^\w\-]+/g, '')
+            .replace(/\-\-+/g, '-')
+            .trim();
+            
+            this.currentEntity.url_slug = urlSlug;
+          }
+
+          this.apiService.updateCustomer(this.currentEntity).subscribe(
+            response => {
+              this.loadData();
+              this.currentEntity = {};
+              this.closeModal();
+            },
+            error => console.error('Error while updating customer! ', error)
+          );
+        }
+        break;
     }
   }
 
@@ -309,7 +371,15 @@ export class DashboardComponent implements OnInit {
           error => console.error('Error while deleting category! ', error)
         );
         break;
+
+      case 'customers': 
+      this.apiService.deleteCustomer(id).subscribe(
+        response =>{ this.loadData();},
+        error => console.error('Error while deleting customer! ', error)
+      );
+      break;
     }
+      
   }
 
   loadData(): void {
@@ -336,6 +406,16 @@ export class DashboardComponent implements OnInit {
         this.apiService.getCategories().subscribe(
           response => this.categories = response.data || [],
           error => console.error('Error while loading categories! ', error)
+        );
+        break;
+      case 'customers':
+        this.apiService.getCustomers().subscribe(
+          response => {
+            this.customers = response.data.data;
+          },
+          error => {
+            console.error('Error while loading customers! ', error)
+          }
         );
         break;
     }
@@ -520,6 +600,21 @@ export class DashboardComponent implements OnInit {
     const start = (this.currentPage - 1) * this.itemsPerPage + 1;
     const end = Math.min((this.currentPage * this.itemsPerPage), this.totalItems);
     return `${start} to ${end} of ${this.totalItems} entries`; 
+  }
+
+
+  copyUrlToClipboard(): void {
+    const customerUrl = `http://localhost:4200/customer/${this.currentEntity.url_slug}`;
+
+    navigator.clipboard.writeText(customerUrl).then(
+      () => {
+        alert('Url kopyalandı!');
+      },
+      (err) => {
+        console.error('Url kopyalanamadı: ', err);
+      }
+    );
+
   }
 
 }

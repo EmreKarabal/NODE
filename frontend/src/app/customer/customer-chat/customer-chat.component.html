@@ -1,0 +1,39 @@
+<p>customer-chat works!</p>
+<div class="chat-container">
+    <!-- Header -->
+    <div class="chat-header">
+      <h2>{{ customerName }} - Chatbot</h2>
+    </div>
+  
+    <!-- Messages Area -->
+    <div class="messages-container">
+      <div *ngFor="let message of messages" 
+           [ngClass]="{'message': true, 'user-message': message.isUser, 'bot-message': !message.isUser}">
+        <div class="message-content">
+          <p>{{ message.text }}</p>
+          <small class="message-time">{{ message.timestamp | date:'HH:mm' }}</small>
+        </div>
+      </div>
+  
+      <!-- Loading indicator -->
+      <div *ngIf="isLoading" class="loading-indicator">
+        <div class="typing-indicator">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Input Area -->
+    <div class="input-container">
+      <input type="text" 
+             class="message-input" 
+             [(ngModel)]="newMessage" 
+             placeholder="Mesajınızı yazın..." 
+             (keyup.enter)="sendMessage()">
+      <button class="send-button" [disabled]="!newMessage.trim() || isLoading" (click)="sendMessage()">
+        <i class="fas fa-paper-plane"></i> Gönder
+      </button>
+    </div>
+  </div>

@@ -40,6 +40,14 @@
         Statistics
       </a>
     </li>
+    <li class="nav-item">
+      <a
+        class="nav-link"
+        [class.active]="activeTab === 'customers'"
+        (click)="switchTab('customers')">
+        Customers
+        </a>
+    </li>
   </ul>
 
   <!-- Users Tab -->
@@ -317,6 +325,70 @@
   </div>
 </div>
 
+<div *ngIf="activeTab === 'customers'" class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h5 class="card-title mb-0">Customer Management</h5>
+    <button
+      class="btn btn-primary btn-sm"
+      (click)="openModal('add')">
+      Add New Customer
+    </button>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Actions</th>
+            <th>Customer URL</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let customer of customers">
+            <td>{{customer.first_name}} {{customer.last_name}}</td>
+            <td>{{customer.email}}</td>
+            <td>
+              <span 
+                class="badge"
+                [class.bg-success]="customer.is_active"
+                [class.bg-danger]="!customer.is_active">
+                {{customer.is_active ? 'Active' : 'Inactive'}}
+              </span>
+            </td>
+            <td>
+              <a [routerLink]="['/customer', customer.url_slug]" target="_blank">
+                /customer/{{customer.url_slug}}
+              </a>
+            </td>
+            <td>
+              <div class="btn-group btn-group-sm" role="group">
+                <button
+                class="btn btn-outline-primary"
+                (click)="openModal('edit', customer)">
+                Edit
+                </button>
+                <button
+                class="btn btn-outline-danger"
+                (click)="deleteEntity('customers', customer._id)">
+                Delete
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="customers.length === 0">
+            <td colspan="6" class="text-center text-muted">
+              No customers found
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
   <!-- Modal -->
   <div 
     class="modal fade" 
@@ -464,6 +536,71 @@
                   [(ngModel)]="currentEntity.is_active"
                   name="is_active">
                 <label class="form-check-label">Active</label>
+              </div>
+            </div>
+            <div *ngIf="activeTab === 'customers'">
+              <div class="mb-3">
+                <label class="form-label">First Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="currentEntity.first_name"
+                  name="first_name"
+                  required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Last Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="currentEntity.last_name"
+                  name="last_name"
+                  required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input
+                  type="email"
+                  class="form-control"
+                  [(ngModel)]="currentEntity.email"
+                  name="email"
+                  required>
+              </div>
+              <div class="mb-3" *ngIf="modalMode === 'add'">
+                <label class="form-label">Password</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  [(ngModel)]="currentEntity.password"
+                  name="password"
+                  required>
+              </div>
+              <div class="mb-3 form-check">
+                <input
+                  type="checkbox"
+                  class="form-check-input"
+                  [(ngModel)]="currentEntity.is_active"
+                  name="is_active">
+                  <label class="form-check-label">Active</label>
+              </div>
+              <div class="mb-3" *ngIf="modalMode === 'edit' && currentEntity.url_slug">
+                <label class="form-label">Customer Url</label>
+                <div class="input-group">
+                  <span class="input-group-text">http://localhost:4200/customer/</span>
+                  <input  
+                    type="text"
+                    class="form-control"
+                    [(ngModel)]="currentEntity.url_slug"
+                    name="url_slug"
+                    readonly>
+                  <button
+                    class="btn btn-outline-secondary"
+                    type="button"
+                    (click)="copyUrlToClipboard()">
+                  <i class="fas fa-copy"></i>
+                  </button>
+                </div>
+                <small class="text-muted">Bu URL, müşterinin chatbot sayfasına erişim için kullanılır.</small>
               </div>
             </div>
           </form>

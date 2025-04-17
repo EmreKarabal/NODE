@@ -5,6 +5,10 @@ module.exports = {
             name: "User Permissions"
         },
         {
+            id: "CUSTOMERS",
+            name: "Customer Permissions"
+        },
+        {
             id: "ROLES",
             name: "Role Permissions"
         },
@@ -42,6 +46,18 @@ module.exports = {
             name: "User Delete",
             group: "USERS",
             description: "User delete"
+        },
+        {
+            key: "customer_view",
+            name: "Customer View",
+            group: "USERS",
+            description: "Customer view"
+        },
+        {
+            key: "customer_add",
+            name: "Customer Add",
+            group: "USERS",
+            description: "Customer add"
         },
         {
             key: "role_view",

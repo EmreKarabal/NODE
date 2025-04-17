@@ -13,6 +13,7 @@ import { RouterModule } from '@angular/router';
 import { DashboardComponent } from './dashboard/dashboard/dashboard.component';
 import { AuthGuardInterceptor } from './core/interceptors/auth-guard.interceptor';
 import { NgApexchartsModule } from 'ng-apexcharts';
+import { CustomerChatComponent } from './customer/customer-chat/customer-chat.component';
 
 
 @NgModule({
@@ -20,7 +21,8 @@ import { NgApexchartsModule } from 'ng-apexcharts';
     AppComponent,
     LoginComponent,
     RegisterComponent,
-    DashboardComponent
+    DashboardComponent,
+    CustomerChatComponent
   ],
   imports: [
     BrowserModule,
