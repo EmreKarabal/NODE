@@ -76,13 +76,13 @@ export class CustomerChatComponent implements OnInit{
     this.newMessage = '';
     this.isLoading = true;
 
-    this.apiService.sendChatMessage(this.customerId, messageToSend).subscribe({
+    this.apiService.sendChatMessage(messageToSend).subscribe({
       next: (response) => {
         if(response && response.data){
           
           const botResponse: ChatMessage = {
 
-            text: response.data.response,
+            text: response.data,
             isUser: false,
             timestamp: new Date()
 

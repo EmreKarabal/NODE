@@ -125,9 +125,8 @@ export class ApiService {
     });
   }
 
-  sendChatMessage(customerId: string, message: string) {
+  sendChatMessage(message: string) {
     return this.http.post<any>(`${this.baseUrl}/chat/message`, {
-      customerId, 
       message
     });
   }

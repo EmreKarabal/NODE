@@ -301,29 +301,40 @@ export class DashboardComponent implements OnInit {
 
       case 'customers':
         if(this.modalMode === 'add'){
-
-          const urlSlug = this.currentEntity.name
-          .toLowerCase()
-          .replace(/\s+/g, '-')
-          .replace(/[^\w\*]+/g, '')
-          .replace(/\-\-+/g, '-')
-          .trim();
-
-          this.currentEntity.url_slug = urlSlug;
-
+        
           this.apiService.addCustomer(this.currentEntity).subscribe(
             response => {
-              this.loadData();
-              this.currentEntity = {};
-              this.closeModal();
+              console.log('Full response: ', response);
+              if(response && response.data && response.data._id) {
+
+                const newCustomer = {
+                  ...this.currentEntity,
+                  _id: response.data._id,
+                  url_slug: response.data._id
+                };
+
+                this.customers.push(newCustomer);
+
+                this.closeModal();
+                this.currentEntity = {};
+                this.loadData();
+
+              } else {
+
+                console.error('Customer created but ID not found in response: ', response);
+                this.loadData();
+                this.currentEntity = {};
+                this.closeModal();
+              }
             },
             error => console.error('Error while adding customer! ', error)
           );
+          
         }
         else {
 
           if(this.currentEntity.name !== this.originalEntity.name){
-            const urlSlug = this.currentEntity.name
+            const urlSlug = this.currentEntity._id
             .toLowerCase()
             .replace(/\s+/g, '-')
             .replace(/[^\w\-]+/g, '')
@@ -604,16 +615,24 @@ export class DashboardComponent implements OnInit {
 
 
   copyUrlToClipboard(): void {
+    
+    if(!this.currentEntity.url_slug) {
+      alert('URL slug is not available for this customer');
+      return;
+    }
+
     const customerUrl = `http://localhost:4200/customer/${this.currentEntity.url_slug}`;
+
 
     navigator.clipboard.writeText(customerUrl).then(
       () => {
-        alert('Url kopyalandı!');
+        alert('Url kopyalandı');
       },
       (err) => {
         console.error('Url kopyalanamadı: ', err);
       }
     );
+
 
   }
 
