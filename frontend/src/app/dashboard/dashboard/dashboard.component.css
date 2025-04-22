@@ -1,108 +1,126 @@
-.admin-dashboard {
+/* dashboard.component.css */
+.container-fluid {
+  padding: 0;
   height: 100vh;
-  background-color: #f4f6f9;
+  overflow: auto;
 }
 
+.row {
+  margin: 0;
+  min-height: 100%;
+}
+
+/* Sidebar Styles */
 .sidebar {
   background-color: #343a40;
   color: white;
-  height: 100vh;
-  padding-top: 20px;
+  min-height: 100vh;
+  padding: 1.5rem 0;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+  position: sticky;
+  top: 0;
+}
+
+.sidebar-title {
+  color: white;
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+  font-weight: 600;
 }
 
 .sidebar .nav-link {
-  color: #adb5bd;
-  padding: 10px 15px;
-  margin-bottom: 5px;
-  border: none;
-  background: none;
-  width: 100%;
-  text-align: left;
+  color: #ced4da;
+  padding: 0.75rem 1.5rem;
+  margin-bottom: 0.25rem;
+  border-radius: 0;
+  border-left: 4px solid transparent;
   transition: all 0.3s ease;
+  text-align: left;
+  display: flex;
+  align-items: center;
 }
 
 .sidebar .nav-link:hover {
-  background-color: #495057;
+  background-color: rgba(255, 255, 255, 0.1);
   color: white;
 }
 
 .sidebar .nav-link.active {
-  background-color: #007bff;
+  background-color: rgba(255, 255, 255, 0.1);
   color: white;
+  border-left: 4px solid #007bff;
 }
 
 .sidebar .nav-link i {
   margin-right: 10px;
+  width: 20px;
+  text-align: center;
 }
 
+/* Main Content Styles */
 .main-content {
-  padding: 20px;
+  padding: 1.5rem;
+  min-height: 100vh;
   overflow-y: auto;
-  height: 100vh;
+  background-color: #f8f9fa;
 }
 
+/* Card Styles */
 .card {
-  margin-bottom: 20px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  border: none;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  margin-bottom: 1.5rem;
 }
 
 .card-header {
-  background-color: #ffffff;
+  background-color: #fff;
   border-bottom: 1px solid #e9ecef;
-}
-
-.table {
-  background-color: white;
-}
-
-.modal {
-  background-color: rgba(0,0,0,0.5);
-  display: block;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1050;
-}
-
-.modal-dialog {
-  max-width: 500px;
-  margin: 1.75rem auto;
-}
-
-.btn-group .btn {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.875rem;
-}
-
-
-/* Grafik kartları için stil */
-.statistics-card {
-  transition: all 0.3s ease;
-  border: 1px solid rgba(0, 0, 0, 0.125);
-}
-
-.statistics-card:hover {
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  padding: 1.25rem 1.5rem;
 }
 
 .card-body {
   padding: 1.5rem;
 }
 
-/* Grafiklerin responsive olması için */
-apx-chart {
-  width: 100%;
-  display: block;
+.card-footer {
+  background-color: #f8f9fa;
+  border-top: 1px solid rgba(0,0,0,.125);
+  padding: 1rem 1.5rem;
 }
 
-/* Tablo stilleri (mevcut stilleriniz) */
+/* Table Styles */
+.table {
+  margin-bottom: 0;
+}
+
+.table th {
+  border-top: none;
+  background-color: #f8f9fa;
+  font-weight: 600;
+}
+
 .table-responsive {
   overflow-x: auto;
 }
 
-/* dashboard.component.css */
+/* Button Styles */
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.btn-group .btn {
+  padding: 0.375rem 0.75rem;
+}
+
+/* Badge Styles */
+.badge {
+  padding: 0.5em 0.75em;
+  font-weight: 500;
+}
+
+/* Pagination Styles */
 .pagination {
   margin-bottom: 0;
 }
@@ -111,12 +129,65 @@ apx-chart {
   cursor: pointer;
 }
 
-.items-per-page {
-  width: 120px;
-  margin-left: 15px;
+.page-item.active .page-link {
+  background-color: #007bff;
+  border-color: #007bff;
 }
 
-.card-footer {
-  background-color: #f8f9fa;
-  border-top: 1px solid rgba(0,0,0,.125);
+.items-per-page {
+  width: 120px;
+}
+
+/* Modal Styles */
+.modal {
+  background-color: rgba(0,0,0,0.5);
+}
+
+.modal-dialog {
+  max-width: 500px;
+  margin: 1.75rem auto;
+}
+
+.modal-content {
+  border: none;
+  border-radius: 0.5rem;
+}
+
+.modal-header {
+  border-bottom: 1px solid #e9ecef;
+  padding: 1.25rem;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-footer {
+  border-top: 1px solid #e9ecef;
+  padding: 1.25rem;
+}
+
+/* Statistics Tab Styles */
+.statistics-card {
+  transition: all 0.3s ease;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.statistics-card:hover {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .sidebar {
+    position: relative;
+    min-height: auto;
+    width: 100%;
+  }
+  
+  .main-content {
+    height: auto;
+    padding: 1rem;
+  }
 }
